@@ -7,7 +7,7 @@ import com.varabyte.kobweb.compose.ui.modifiers.border
 import com.varabyte.kobweb.compose.ui.modifiers.transition
 import com.varabyte.kobweb.silk.components.style.ComponentStyle
 import com.varabyte.kobweb.silk.components.style.focus
-import org.example.blogmultiplatform.models.Theme
+import org.example.blogmultiplatform.core.AppColors
 import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.ms
 import org.jetbrains.compose.web.css.px
@@ -24,7 +24,7 @@ val LoginInputStyle by ComponentStyle {
         Modifier.border(
             width = 2.px,
             style = LineStyle.Solid,
-            color = Theme.Primary.rgb
+            color = AppColors.Primary.rgb
         )
     }
 }

@@ -9,7 +9,7 @@ import com.varabyte.kobweb.api.init.InitApiContext
 import kotlinx.coroutines.flow.firstOrNull
 import org.example.blogmultiplatform.models.LoginRequest
 import org.example.blogmultiplatform.models.User
-import org.example.blogmultiplatform.util.Properties.dbName
+import org.example.blogmultiplatform.core.Properties.dbName
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 

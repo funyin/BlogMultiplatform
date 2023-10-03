@@ -5,6 +5,7 @@ kotlin = "1.9.10"
 mongodb = "4.10.1"
 kotlinx-serialization = "1.6.0"
 serialization-plugin = "1.9.0"
+ktor-version="2.3.4"
 
 [libraries]
 kobweb-api = { module = "com.varabyte.kobweb:kobweb-api", version.ref = "kobweb" }
@@ -15,6 +16,11 @@ kobweb-silk-icons-mdi = { module = "com.varabyte.kobweb:kobweb-silk-icons-mdi", 
 kobwebx-markdown = { module = "com.varabyte.kobwebx:kobwebx-markdown", version.ref = "kobweb" }
 kotlin-mongodb = { module = "org.mongodb:mongodb-driver-kotlin-coroutine", version.ref = "mongodb" }
 kotlinx-serialization= { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+ktor-client-core= { module = "io.ktor:ktor-client-core", version.ref = "ktor-version" }
+ktor-client-js= { module = "io.ktor:ktor-client-js", version.ref = "ktor-version" }
+ktor-client-logging= { module = "io.ktor:ktor-client-logging", version.ref = "ktor-version" }
+ktor-client-serialization= { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor-version" }
+ktor-content-negotiation= { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor-version" }
 
 [plugins]
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "jetbrains-compose" }
