@@ -7,22 +7,24 @@ import com.varabyte.kobweb.api.data.add
 import com.varabyte.kobweb.api.init.InitApi
 import com.varabyte.kobweb.api.init.InitApiContext
 import kotlinx.coroutines.flow.firstOrNull
-import org.example.blogmultiplatform.models.LoginRequest
-import org.example.blogmultiplatform.models.User
 import org.example.blogmultiplatform.core.Properties.dbName
+import org.example.blogmultiplatform.models.LoginRequest
+import org.example.blogmultiplatform.models.Post
+import org.example.blogmultiplatform.models.User
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 
 @InitApi
 fun initMongoDb(context: InitApiContext) {
-    context.data.add(MongoDB(context))
+    context.data.add(MongoController(context))
 }
 
-class MongoDB(private val context: InitApiContext) : MongoRepository {
+class MongoController(private val context: InitApiContext) {
     private val client = MongoClient.create("mongodb://localhost:27017")
     private val database = client.getDatabase(dbName)
     private val usersCollection = database.getCollection<User>("users")
-    override suspend fun login(request: LoginRequest): User? {
+    private val postsCollection = database.getCollection<Post>("posts")
+    suspend fun login(request: LoginRequest): User? {
         return try {
             usersCollection.find(
                 and(
@@ -36,7 +38,7 @@ class MongoDB(private val context: InitApiContext) : MongoRepository {
         }
     }
 
-    override suspend fun checkUserId(userId: String): Boolean {
+    suspend fun checkUserId(userId: String): Boolean {
         return try {
             val documentCount = usersCollection.countDocuments(eq("_id", userId))
             return documentCount > 0
@@ -55,5 +57,9 @@ class MongoDB(private val context: InitApiContext) : MongoRepository {
             hexString.append(String.format("%02x", byte))
         }
         return hexString.toString()
+    }
+
+    suspend fun addPost(post: Post): Boolean {
+        return postsCollection.insertOne(post).wasAcknowledged()
     }
 }

@@ -23,7 +23,10 @@ import org.example.blogmultiplatform.core.AppColors
 import org.example.blogmultiplatform.res.Res
 import org.example.blogmultiplatform.res.TOP_PANEL_HEIGHT
 import org.example.blogmultiplatform.res.logo
-import org.jetbrains.compose.web.css.*
+import org.jetbrains.compose.web.css.ms
+import org.jetbrains.compose.web.css.percent
+import org.jetbrains.compose.web.css.px
+import org.jetbrains.compose.web.css.vh
 
 @Composable
 fun OverflowSidePanel(modifier: Modifier = Modifier, onMenuClose: () -> Unit) {
@@ -47,12 +50,13 @@ fun OverflowSidePanel(modifier: Modifier = Modifier, onMenuClose: () -> Unit) {
     }
 
     Box(
-        modifier = modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth()
             .opacity(opactiy)
             .overflow(Overflow.Auto)
-            .height(100.vh).position(Position.Fixed).zIndex(9)
+            .height(100.vh)
             .background(AppColors.HalfBlack.rgb)
             .transition(CSSTransition(property = "opacity", duration = 300.ms))
+            .then(modifier)
     ) {
         Box(modifier = Modifier.fillMaxSize().onClick {
             closeMenu()

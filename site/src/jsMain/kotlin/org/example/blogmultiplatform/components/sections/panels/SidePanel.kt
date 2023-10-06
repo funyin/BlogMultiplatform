@@ -18,19 +18,16 @@ import org.example.blogmultiplatform.core.AppColors
 import org.example.blogmultiplatform.core.SessionManager
 import org.example.blogmultiplatform.res.*
 import org.example.blogmultiplatform.styles.NavigationItemStyle
-import org.jetbrains.compose.web.css.Position
 import org.jetbrains.compose.web.css.px
-import org.jetbrains.compose.web.css.vh
 
 @Composable
 fun SidePanel(modifier: Modifier) {
     Column(
-        modifier = modifier.padding(topBottom = 40.px, leftRight = 50.px)
+        modifier = Modifier.padding(topBottom = 40.px, leftRight = 50.px)
             .width(Res.Dimens.SIDE_PANEL_WIDTH.px)
-            .height(100.vh)
-            .position(Position.Fixed)
-            .zIndex(9)
+            .fillMaxHeight()
             .background(AppColors.Secondary.rgb)
+            .then(modifier)
     ) {
         Image(Res.Images.logo, desc = "Logo", modifier = Modifier.margin(bottom = 60.px))
         SpanText(

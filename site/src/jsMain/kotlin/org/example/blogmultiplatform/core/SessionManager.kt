@@ -6,6 +6,7 @@ import kotlinx.serialization.json.Json
 import org.example.blogmultiplatform.models.RandomJoke
 import org.example.blogmultiplatform.models.User
 import org.example.blogmultiplatform.res.Res
+import org.example.blogmultiplatform.ui.createPost.CreatePostContract
 import org.w3c.dom.get
 import org.w3c.dom.set
 import kotlin.js.Date
@@ -17,6 +18,15 @@ object SessionManager {
 
     fun endSession() {
         localStorage.removeItem(Res.Strings.StoreKeys.user)
+    }
+
+    fun setCreatePostState(state: String) {
+        localStorage[Res.Strings.StoreKeys.createPostState] = state
+    }
+
+    fun getCreatePostState(): String {
+        return localStorage.getItem(Res.Strings.StoreKeys.createPostState)
+            ?: Json.encodeToString(CreatePostContract.State())
     }
 
 

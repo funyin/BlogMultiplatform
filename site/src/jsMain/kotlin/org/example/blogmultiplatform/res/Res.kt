@@ -8,6 +8,7 @@ object Res {
             const val user = "user"
             const val lastJokeFetchDate = "lastJokeFetchDate"
             const val lastJoke = "lastJoke"
+            const val createPostState = "createPostState"
         }
 
     }

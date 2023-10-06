@@ -19,9 +19,9 @@ import org.jetbrains.compose.web.css.px
 @Composable
 fun TopPanel(modifier: Modifier = Modifier, onClick: () -> Unit) {
     Row(
-        modifier = modifier.fillMaxWidth().height(Res.Dimens.TOP_PANEL_HEIGHT.px)
+        modifier = Modifier.fillMaxWidth().height(Res.Dimens.TOP_PANEL_HEIGHT.px)
             .padding(leftRight = 24.px)
-            .background(AppColors.Secondary.rgb),
+            .background(AppColors.Secondary.rgb).then(modifier),
         verticalAlignment = Alignment.CenterVertically
     ) {
         FaBars(

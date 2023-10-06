@@ -9,11 +9,9 @@ import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.graphics.Colors
 import com.varabyte.kobweb.compose.ui.modifiers.*
-import com.varabyte.kobweb.compose.ui.toAttrs
 import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.core.rememberPageContext
 import com.varabyte.kobweb.silk.components.graphics.Image
-import com.varabyte.kobweb.silk.components.style.toModifier
 import com.varabyte.kobweb.silk.components.text.SpanText
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -26,19 +24,15 @@ import org.example.blogmultiplatform.modules.auth.AuthViewModel
 import org.example.blogmultiplatform.res.Res
 import org.example.blogmultiplatform.res.adminHome
 import org.example.blogmultiplatform.res.logo
-import org.example.blogmultiplatform.styles.LoginInputStyle
 import org.jetbrains.compose.web.attributes.InputType
-import org.jetbrains.compose.web.attributes.placeholder
-import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.px
-import org.jetbrains.compose.web.dom.Input
 
 @Page(routeOverride = "login")
 @Composable
 fun LoginPage() {
     var errorText by remember { mutableStateOf(" ") }
-    var userName by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var userName by remember { mutableStateOf<String?>(null) }
+    var password by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
     val context = rememberPageContext()
     val viewModel = remember { AuthViewModel(scope) }
@@ -73,33 +67,29 @@ fun LoginPage() {
                     desc = "LogoImage",
                     modifier = Modifier.width(100.px).margin(bottom = 50.px)
                 )
-                Input(
-                    InputType.Email, attrs = LoginInputStyle.toModifier()
-                        .width(350.px)
-                        .height(54.px)
-                        .padding(leftRight = 20.px)
-                        .margin(bottom = 12.px)
-                        .background(Colors.White)
-                        .outline(
-                            width = 0.px,
-                            style = LineStyle.None,
-                            color = Colors.Transparent
-                        )
-                        .fontSize(14.px)
-                        .toAttrs {
-                            placeholder("Username")
-                            onChange {
-                                userName = it.value.trim()
-                            }
-                        }
-                )
-                CustomInputField(placeholder = "Password", onTextChanged = {
+                CustomInputField(
+                    placeholder = "Username",
+//                    value = userName,
+                    inputType = InputType.Text,
+                    name = "username",
+                    modifier = Modifier.margin(top = 12.px)
+                ) {
+                    userName = it.trim()
+                }
+
+                CustomInputField(
+                    placeholder = "Password",
+//                    value = password,
+                    name = "password",
+                    inputType = InputType.Password,
+                    modifier = Modifier.margin(top = 12.px)
+                ) {
                     password = it.trim()
-                }, value = "", inputType = InputType.Password)
-                AppButton(text = "Sign in"){
-                    if (userName.isNotEmpty() && password.isNotEmpty()) {
+                }
+                AppButton(text = "Sign in", modifier = Modifier.margin(top = 20.px)) {
+                    if (!userName.isNullOrEmpty() && !password.isNullOrBlank()) {
                         errorText = "loading"
-                        viewModel.login(userName = userName, password = password)
+                        viewModel.login(userName = userName!!, password = password!!)
                     } else {
                         scope.launch {
                             errorText = "Input fields are empty"

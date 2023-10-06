@@ -3,6 +3,7 @@ package org.example.blogmultiplatform.components.sections.panels
 import androidx.compose.runtime.*
 import com.varabyte.kobweb.compose.css.PointerEvents
 import com.varabyte.kobweb.compose.foundation.layout.Box
+import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.modifiers.fillMaxSize
 import com.varabyte.kobweb.compose.ui.modifiers.pointerEvents
@@ -16,12 +17,14 @@ fun MenuPanel(modifier: Modifier = Modifier) {
     if (breakpoint > Breakpoint.MD) {
         SidePanel(modifier)
     } else {
-        Box(modifier = modifier.fillMaxSize().pointerEvents(PointerEvents.None)) {
-            TopPanel(modifier = Modifier.pointerEvents(PointerEvents.Auto)) {
+        Box(modifier = Modifier.fillMaxSize().pointerEvents(PointerEvents.None).then(modifier)) {
+            TopPanel(modifier = Modifier.pointerEvents(PointerEvents.Auto).align(Alignment.TopCenter)) {
                 overflowMenuOpened = true
             }
             if (overflowMenuOpened)
-                OverflowSidePanel(modifier = Modifier.pointerEvents(PointerEvents.Auto)) {
+                OverflowSidePanel(
+                    modifier = Modifier.pointerEvents(PointerEvents.Auto).align(Alignment.CenterStart)
+                ) {
                     overflowMenuOpened = false
                 }
         }

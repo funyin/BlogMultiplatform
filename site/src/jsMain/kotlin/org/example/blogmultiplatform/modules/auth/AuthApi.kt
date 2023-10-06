@@ -12,7 +12,7 @@ object AuthApi {
     private val api = window.api
     suspend fun login(request: LoginRequest): User? {
         return try {
-            val response = api.tryPost(apiPath = "login", body = Json.encodeToString(request).encodeToByteArray())
+            val response = api.tryPost(apiPath = "/auth/login", body = Json.encodeToString(request).encodeToByteArray())
             response?.decodeToString()?.let { Json.decodeFromString<User>(it) }
         } catch (e: SerializationException) {
             null
@@ -21,7 +21,7 @@ object AuthApi {
 
     suspend fun checkUserId(userId: String): Boolean {
         return try {
-            val response = api.tryPost(apiPath = "checkUserId", body = Json.encodeToString(userId).encodeToByteArray())
+            val response = api.tryPost(apiPath = "/auth/checkUserId", body = Json.encodeToString(userId).encodeToByteArray())
             response?.decodeToString()?.let {
                 Json.decodeFromString<Boolean>(it)
             } ?: false

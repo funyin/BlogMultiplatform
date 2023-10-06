@@ -58,7 +58,10 @@ fun <T> AppDropDown(
                         .onClick {
                             onSelect(option)
                         }
-                        .toAttrs { classes("dropdown-item") }) {
+                        .toAttrs {
+                            classes("dropdown-item")
+                            if (selectedItem == option) classes("active")
+                        }) {
                         SpanText(buildOptionName(option))
                     }
                 }

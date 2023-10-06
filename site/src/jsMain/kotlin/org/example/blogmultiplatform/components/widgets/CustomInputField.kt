@@ -8,6 +8,7 @@ import com.varabyte.kobweb.compose.ui.toAttrs
 import com.varabyte.kobweb.silk.components.style.toModifier
 import org.example.blogmultiplatform.styles.LoginInputStyle
 import org.jetbrains.compose.web.attributes.InputType
+import org.jetbrains.compose.web.attributes.name
 import org.jetbrains.compose.web.attributes.placeholder
 import org.jetbrains.compose.web.attributes.readOnly
 import org.jetbrains.compose.web.css.LineStyle
@@ -22,6 +23,7 @@ fun <T> CustomInputField(
     inputType: InputType<T>,
     value: T? = null,
     readOnly: Boolean = false,
+    name: String? = null,
     onTextChanged: (T) -> Unit = {}
 ) {
     Input(
@@ -39,6 +41,12 @@ fun <T> CustomInputField(
             .then(modifier)
             .toAttrs {
                 placeholder(placeholder)
+                value?.let {
+                    this.value("$it")
+                }
+                name?.let {
+                    name(it)
+                }
                 if (readOnly)
                     readOnly()
                 onChange {

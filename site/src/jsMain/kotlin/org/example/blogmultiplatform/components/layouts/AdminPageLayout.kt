@@ -5,9 +5,7 @@ import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.BoxScope
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
-import com.varabyte.kobweb.compose.ui.modifiers.fillMaxSize
-import com.varabyte.kobweb.compose.ui.modifiers.maxWidth
-import com.varabyte.kobweb.compose.ui.modifiers.padding
+import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.silk.components.style.breakpoint.Breakpoint
 import com.varabyte.kobweb.silk.theme.breakpoint.rememberBreakpoint
 import org.example.blogmultiplatform.components.sections.panels.MenuPanel
@@ -16,6 +14,7 @@ import org.example.blogmultiplatform.res.PAGE_WIDTH
 import org.example.blogmultiplatform.res.Res
 import org.example.blogmultiplatform.res.SIDE_PANEL_WIDTH
 import org.example.blogmultiplatform.res.TOP_PANEL_HEIGHT
+import org.jetbrains.compose.web.css.Position
 import org.jetbrains.compose.web.css.px
 
 @Composable
@@ -32,7 +31,12 @@ fun AdminPageLayout(content: @Composable BoxScope.() -> Unit) {
             ) {
                 content()
             }
-            MenuPanel(modifier = Modifier.align(Alignment.CenterStart))
+            MenuPanel(
+                modifier = Modifier.align(Alignment.CenterStart)
+                    .position(Position.Fixed)
+                    .top(0.px)
+                    .zIndex(9)
+            )
         }
     }
 }
