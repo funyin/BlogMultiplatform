@@ -40,6 +40,7 @@ kotlin {
                 implementation(libs.kotlinx.serialization)
                 implementation(libs.ballast.core)
                 implementation(libs.ballast.saved.state)
+                implementation(libs.kotlinx.datetime)
             }
         }
 

@@ -22,3 +22,5 @@ val Res.Images.Companion.icPicture: String
 
 val Res.Images.Companion.icLetterCase: String
     get() = "/ic_t.svg"
+val Res.Images.Companion.checkMark: String
+    get() = "/checkmark.svg"

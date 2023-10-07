@@ -1,4 +1,4 @@
-package org.example.blogmultiplatform.pages.admin
+package org.example.blogmultiplatform.pages.admin.posts
 
 import androidx.compose.runtime.*
 import com.varabyte.kobweb.compose.css.*
@@ -8,6 +8,7 @@ import com.varabyte.kobweb.compose.ui.*
 import com.varabyte.kobweb.compose.ui.graphics.Colors
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.core.Page
+import com.varabyte.kobweb.core.rememberPageContext
 import com.varabyte.kobweb.silk.components.forms.Switch
 import com.varabyte.kobweb.silk.components.forms.SwitchSize
 import com.varabyte.kobweb.silk.components.graphics.Image
@@ -22,13 +23,11 @@ import com.varabyte.kobweb.silk.components.text.SpanText
 import com.varabyte.kobweb.silk.theme.breakpoint.rememberBreakpoint
 import kotlinx.browser.document
 import org.example.blogmultiplatform.components.layouts.AdminPageLayout
-import org.example.blogmultiplatform.components.widgets.AppButton
-import org.example.blogmultiplatform.components.widgets.AppDropDown
-import org.example.blogmultiplatform.components.widgets.CustomInputField
-import org.example.blogmultiplatform.components.widgets.CustomTextArea
+import org.example.blogmultiplatform.components.widgets.*
 import org.example.blogmultiplatform.core.AppColors
 import org.example.blogmultiplatform.models.Category
 import org.example.blogmultiplatform.models.EditorKey
+import org.example.blogmultiplatform.models.UiState
 import org.example.blogmultiplatform.models.icon
 import org.example.blogmultiplatform.modules.posts.CreatePostScreenEventHandler
 import org.example.blogmultiplatform.modules.posts.CreatePostViewModel
@@ -44,42 +43,29 @@ import org.jetbrains.compose.web.dom.Div
 @Page
 @Composable
 fun CreatePostPage() {
-//    var popular by remember { mutableStateOf(false) }
-//    var main by remember { mutableStateOf(false) }
-//    var sponsored by remember { mutableStateOf(false) }
-//    var subtitle by remember { mutableStateOf<String?>(null) }
-//    var pastImageUrl by remember { mutableStateOf(false) }
-//    var postContent by remember { mutableStateOf<String?>(null) }
-//    var selectedCategory by remember { mutableStateOf<Category?>(null) }
-//    var selectedFileName by remember { mutableStateOf<String?>(null) }
     val breakpoint = rememberBreakpoint()
-//    var activeKeys by remember {
-//        mutableStateOf(listOf<EditorKey>())
-//    }
-//    var showPreview by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
+    val context = rememberPageContext()
     val viewModel = remember(scope) {
-        CreatePostViewModel(coroutineScope = scope, eventHandler = CreatePostScreenEventHandler())
+        CreatePostViewModel(coroutineScope = scope, eventHandler = CreatePostScreenEventHandler(pageContext = context))
     }
     val uiState by viewModel.observeStates().collectAsState()
+    val createPostState = uiState.createPostState
     AdminPageLayout {
         Column(
-            modifier = Modifier.fillMaxSize()
-                .maxWidth(700.px)
-                .align(Alignment.Center)
+            modifier = Modifier.fillMaxSize().maxWidth(700.px).align(Alignment.Center)
                 .padding(topBottom = 50.px, leftRight = 16.px),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             SimpleGrid(
-                numColumns = numColumns(base = 2, sm = 3), variant = ComponentVariant.Empty,
+                numColumns = numColumns(base = 2, sm = 3),
+                variant = ComponentVariant.Empty,
                 modifier = Modifier.thenIf(breakpoint < Breakpoint.SM, Modifier.fillMaxWidth())
             ) {
                 SwitchTile(
-                    text = "Popular",
-                    switchSize = SwitchSize.LG,
-                    checked = uiState.popular
+                    text = "Popular", switchSize = SwitchSize.LG, checked = uiState.popular
                 ) {
                     viewModel.trySend(CreatePostContract.Inputs.UpdatePopular(it))
                 }
@@ -100,8 +86,7 @@ fun CreatePostPage() {
                 }
             }
             CustomInputField(
-                modifier = Modifier.margin(top = 20.px).fillMaxWidth()
-                    .background(AppColors.LightGrey.rgb),
+                modifier = Modifier.margin(top = 20.px).fillMaxWidth().background(AppColors.LightGrey.rgb),
                 inputType = InputType.Text, value = uiState.title,
                 onTextChanged = {
                     viewModel.trySend(CreatePostContract.Inputs.UpdateTitle(it))
@@ -109,8 +94,7 @@ fun CreatePostPage() {
                 placeholder = "Title",
             )
             CustomInputField(
-                modifier = Modifier.margin(top = 14.px).fillMaxWidth()
-                    .background(AppColors.LightGrey.rgb),
+                modifier = Modifier.margin(top = 14.px).fillMaxWidth().background(AppColors.LightGrey.rgb),
                 inputType = InputType.Text,
                 value = uiState.subtitle,
                 onTextChanged = {
@@ -125,8 +109,7 @@ fun CreatePostPage() {
             ) {
                 viewModel.trySend(CreatePostContract.Inputs.UpdateCategory(it))
             }
-            SwitchTile(
-                modifier = Modifier.margin(top = 14.px).alignSelf(AlignSelf.SelfStart),
+            SwitchTile(modifier = Modifier.margin(top = 14.px).alignSelf(AlignSelf.SelfStart),
                 switchSize = SwitchSize.MD,
                 checked = uiState.pasteImageUrl,
                 text = "Paste an Image URL instead",
@@ -135,10 +118,8 @@ fun CreatePostPage() {
                 })
             Row(modifier = Modifier.fillMaxWidth().margin(top = 14.px)) {
                 CustomInputField(
-                    modifier = Modifier.fillMaxWidth()
-                        .background(AppColors.LightGrey.rgb)
-                        .transition(CSSTransition(TransitionProperty.All, duration = 300.ms))
-                        .weight(1),
+                    modifier = Modifier.fillMaxWidth().background(AppColors.LightGrey.rgb)
+                        .transition(CSSTransition(TransitionProperty.All, duration = 300.ms)).weight(1),
                     inputType = InputType.Url, value = uiState.imageUrl,
                     onTextChanged = {
                         viewModel.trySend(CreatePostContract.Inputs.ImageUrl(it))
@@ -146,21 +127,20 @@ fun CreatePostPage() {
                     readOnly = !uiState.pasteImageUrl,
                     placeholder = "Image Url",
                 )
-                if (!uiState.pasteImageUrl)
-                    AppButton(modifier = Modifier.width(92.px).margin(left = 14.px), text = "Upload") {
-                        document.loadDataUrlFromDisk(accept = "image/png, image/jpg") {
-                            viewModel.trySend(CreatePostContract.Inputs.ImageUrl(filename))
-                        }
+                if (!uiState.pasteImageUrl) AppButton(
+                    modifier = Modifier.width(92.px).margin(left = 14.px),
+                    text = "Upload"
+                ) {
+                    document.loadDataUrlFromDisk(accept = "image/png, image/jpg") {
+                        viewModel.trySend(CreatePostContract.Inputs.ImageUrl(filename))
                     }
+                }
             }
             SimpleGrid(
-                modifier = Modifier.margin(top = 14.px).fillMaxWidth(),
-                numColumns = numColumns(base = 1, sm = 2)
+                modifier = Modifier.margin(top = 14.px).fillMaxWidth(), numColumns = numColumns(base = 1, sm = 2)
             ) {
                 Row(
-                    modifier = Modifier
-                        .height(54.px)
-                        .borderRadius(4.px)
+                    modifier = Modifier.height(54.px).borderRadius(4.px)
                         .thenIf(breakpoint >= Breakpoint.SM, Modifier.margin(right = 14.px))
                         .background(AppColors.LightGrey.rgb),
                     horizontalArrangement = if (breakpoint < Breakpoint.SM) Arrangement.Center else Arrangement.Start
@@ -176,22 +156,16 @@ fun CreatePostPage() {
                     }
                 }
                 Row(modifier = Modifier.fillMaxWidth()) {
-                    if (breakpoint >= Breakpoint.SM)
-                        Spacer()
+                    if (breakpoint >= Breakpoint.SM) Spacer()
                     AppButton(
-                        modifier = Modifier
-                            .width(97.px)
-                            .thenIf(breakpoint < Breakpoint.SM, Modifier.fillMaxWidth())
-                            .margin(top = if (breakpoint >= Breakpoint.SM) 0.px else 14.px)
-                            .thenIf(
+                        modifier = Modifier.width(97.px).thenIf(breakpoint < Breakpoint.SM, Modifier.fillMaxWidth())
+                            .margin(top = if (breakpoint >= Breakpoint.SM) 0.px else 14.px).thenIf(
                                 uiState.showPreview,
                                 Modifier.background(AppColors.HalfBlack.rgb).color(AppColors.HalfWhite.rgb)
-                            )
-                            .thenUnless(
-                                uiState.showPreview, Modifier.background(AppColors.LightGrey.rgb)
-                                    .color(AppColors.HalfBlack.rgb)
-                            ),
-                        text = if (uiState.showPreview) "Editor" else "Preview"
+                            ).thenUnless(
+                                uiState.showPreview,
+                                Modifier.background(AppColors.LightGrey.rgb).color(AppColors.HalfBlack.rgb)
+                            ), text = if (uiState.showPreview) "Editor" else "Preview"
                     ) {
                         viewModel.trySend(CreatePostContract.Inputs.ToggleShowPreview)
                     }
@@ -199,42 +173,37 @@ fun CreatePostPage() {
             }
 
             Box(
-                modifier = Modifier
-                    .margin(top = 14.px)
-                    .fillMaxWidth()
-                    .height(400.px)
+                modifier = Modifier.margin(top = 14.px).fillMaxWidth().height(400.px)
                     .background(AppColors.LightGrey.rgb)
             ) {
                 CustomTextArea(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .resize(Resize.None)
-                        .background(AppColors.LightGrey.rgb)
+                    modifier = Modifier.fillMaxSize().resize(Resize.None).background(AppColors.LightGrey.rgb)
                         .visibility(if (uiState.showPreview) Visibility.Hidden else Visibility.Visible),
-                    value = "", placeholder = "Type here..."
+                    value = uiState.content,
+                    placeholder = "Type here..."
                 ) {
                     viewModel.trySend(CreatePostContract.Inputs.UpdateContent(it))
                 }
                 Div(
-                    attrs = Modifier
-                        .id(Res.Id.previewId)
-                        .fillMaxSize()
+                    attrs = Modifier.id(Res.Id.previewId).fillMaxSize()
                         .visibility(if (uiState.showPreview) Visibility.Visible else Visibility.Hidden)
-                        .overflow(Overflow.Auto)
-                        .scrollBehavior(ScrollBehavior.Smooth)
-                        .toAttrs()
+                        .overflow(Overflow.Auto).scrollBehavior(ScrollBehavior.Smooth).toAttrs()
                 ) {
 
                 }
             }
             AppButton(
-                modifier = Modifier.margin(top = 14.px)
-                    .fillMaxWidth(),
+                modifier = Modifier.margin(top = 14.px).fillMaxWidth(),
                 text = "Create",
+                loading = createPostState.isLoading
             ) {
-
+                viewModel.trySend(CreatePostContract.Inputs.CreatePost)
             }
         }
+        if (createPostState is UiState.Error)
+            MessagePopup(message = createPostState.errorMessage) {
+                viewModel.trySend(CreatePostContract.Inputs.ClosePopup)
+            }
     }
 }
 
@@ -243,8 +212,7 @@ private val Res.Id.Companion.previewId: String
 
 val EditorKeyStyle by ComponentStyle {
     base {
-        Modifier
-            .background(Colors.Transparent)
+        Modifier.background(Colors.Transparent)
             .transition(CSSTransition(TransitionProperty.of("background"), duration = 300.ms))
     }
     hover {
@@ -254,24 +222,16 @@ val EditorKeyStyle by ComponentStyle {
 
 @Composable
 private fun EditorKeyView(icon: String, iconSize: CSSpxValue, active: Boolean, onClick: () -> Unit) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .thenIf(active, Modifier.background(AppColors.Primary.rgb))
-            .thenIf(!active, EditorKeyStyle.toModifier())
-            .width(40.px)
-            .fillMaxHeight().padding(10.px)
-            .borderRadius(4.px)
-            .transition(CSSTransition(TransitionProperty.of("background"), duration = 300.ms))
-            .cursor(Cursor.Pointer)
+    Box(contentAlignment = Alignment.Center,
+        modifier = Modifier.thenIf(active, Modifier.background(AppColors.Primary.rgb))
+            .thenIf(!active, EditorKeyStyle.toModifier()).width(40.px).fillMaxHeight().padding(10.px).borderRadius(4.px)
+            .transition(CSSTransition(TransitionProperty.of("background"), duration = 300.ms)).cursor(Cursor.Pointer)
             .onClick {
                 onClick()
-            }
-    ) {
+            }) {
         Image(
             src = icon,
-            modifier = Modifier.size(iconSize)
-                .color(if (active) Colors.White else AppColors.Secondary.rgb)
+            modifier = Modifier.size(iconSize).color(if (active) Colors.White else AppColors.Secondary.rgb)
                 .transition(CSSTransition(TransitionProperty.of("color"), duration = 300.ms)),
         )
     }
@@ -294,8 +254,7 @@ private fun SwitchTile(
         )
         SpanText(
             text = text,
-            modifier = Modifier.fontSize(14.px).color(AppColors.HalfBlack.rgb)
-                .fontFamily(Res.Strings.FONT_FAMILY)
+            modifier = Modifier.fontSize(14.px).color(AppColors.HalfBlack.rgb).fontFamily(Res.Strings.FONT_FAMILY)
         )
     }
 }

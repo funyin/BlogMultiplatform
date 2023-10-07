@@ -34,7 +34,6 @@ class CreatePostViewModel(
                 JsConsoleLogger(it)
             }
         }
-        .withViewModel(State(), inputHandler = CreatePostScreenInputHandler())
+        .withViewModel(State(), inputHandler = CreatePostScreenInputHandler(postApi = PostApiImpl))
         .build(), eventHandler, coroutineScope
-) {
-}
+)

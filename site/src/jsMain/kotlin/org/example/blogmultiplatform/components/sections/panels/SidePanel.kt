@@ -65,9 +65,9 @@ fun NavigationItems() {
         modifier = Modifier.margin(bottom = 24.px),
         title = "My Posts",
         icon = Res.PathIcon.posts,
-        selected = context.route.path.endsWith(Res.Routes.myPosts)
+        selected = context.route.path.endsWith(Res.Routes.posts)
     ) {
-        context.router.navigateTo(Res.Routes.myPosts)
+        context.router.navigateTo(Res.Routes.posts)
     }
     NavigationItem(
         title = "Logout",

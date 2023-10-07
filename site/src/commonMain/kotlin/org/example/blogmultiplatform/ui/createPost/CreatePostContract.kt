@@ -3,6 +3,7 @@ package org.example.blogmultiplatform.ui.createPost
 import kotlinx.serialization.Serializable
 import org.example.blogmultiplatform.models.Category
 import org.example.blogmultiplatform.models.EditorKey
+import org.example.blogmultiplatform.models.UiState
 
 object CreatePostContract {
 
@@ -11,15 +12,20 @@ object CreatePostContract {
         val popular: Boolean = false,
         val main: Boolean = false,
         val sponsored: Boolean = false,
-        val title: String? = null,
-        val subtitle: String? = null,
+        val title: String = "",
+        val subtitle: String = "",
         val category: Category? = null,
         val pasteImageUrl: Boolean = false,
-        val imageUrl: String? = null,
+        val imageUrl: String = "",
         val activeKeys: List<EditorKey> = emptyList(),
         val showPreview: Boolean = false,
-        val content: String? = null,
-    )
+        val content: String = "",
+        val createPostState: UiState<Boolean> = UiState.Initial()
+    ){
+        companion object{
+            val initial = State()
+        }
+    }
 
     sealed interface Inputs {
         data class UpdatePopular(val value: Boolean) : Inputs
@@ -33,9 +39,13 @@ object CreatePostContract {
         data class ToggleEditorKey(val key: EditorKey) : Inputs
         data object ToggleShowPreview : Inputs
         data class UpdateContent(val value: String) : Inputs
+        data object CreatePost : Inputs
+        data class CreatePostResponse(val createPostState: UiState<Boolean>) : Inputs
+        data object ClosePopup : Inputs
+        data class ShowErrorMessage(val message: String) : Inputs
     }
 
     sealed interface Events {
-        data object CreatePost : Events
+        data object PostCreated : Events
     }
 }

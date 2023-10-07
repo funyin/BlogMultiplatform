@@ -31,8 +31,8 @@ import org.jetbrains.compose.web.css.px
 @Composable
 fun LoginPage() {
     var errorText by remember { mutableStateOf(" ") }
-    var userName by remember { mutableStateOf<String?>(null) }
-    var password by remember { mutableStateOf<String?>(null) }
+    var userName by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
     val context = rememberPageContext()
     val viewModel = remember { AuthViewModel(scope) }
@@ -69,17 +69,16 @@ fun LoginPage() {
                 )
                 CustomInputField(
                     placeholder = "Username",
-//                    value = userName,
+                    value = userName,
                     inputType = InputType.Text,
                     name = "username",
                     modifier = Modifier.margin(top = 12.px)
                 ) {
                     userName = it.trim()
                 }
-
                 CustomInputField(
                     placeholder = "Password",
-//                    value = password,
+                    value = password,
                     name = "password",
                     inputType = InputType.Password,
                     modifier = Modifier.margin(top = 12.px)
@@ -87,9 +86,9 @@ fun LoginPage() {
                     password = it.trim()
                 }
                 AppButton(text = "Sign in", modifier = Modifier.margin(top = 20.px)) {
-                    if (!userName.isNullOrEmpty() && !password.isNullOrBlank()) {
+                    if (userName.isNotEmpty() && password.isNotBlank()) {
                         errorText = "loading"
-                        viewModel.login(userName = userName!!, password = password!!)
+                        viewModel.login(userName = userName, password = password)
                     } else {
                         scope.launch {
                             errorText = "Input fields are empty"

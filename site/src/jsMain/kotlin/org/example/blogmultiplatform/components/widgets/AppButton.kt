@@ -7,6 +7,8 @@ import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.graphics.Colors
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.compose.ui.toAttrs
+import com.varabyte.kobweb.silk.components.icons.fa.FaSpinner
+import com.varabyte.kobweb.silk.components.icons.fa.IconSize
 import com.varabyte.kobweb.silk.components.text.SpanText
 import org.example.blogmultiplatform.core.AppColors
 import org.example.blogmultiplatform.res.Res
@@ -15,7 +17,12 @@ import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.Button
 
 @Composable
-fun AppButton(modifier: Modifier = Modifier, text: String, onClick: () -> Unit) {
+fun AppButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    loading: Boolean = false,
+    onClick: () -> Unit = {}
+) {
     Button(
         attrs = Modifier
             .width(350.px)
@@ -40,6 +47,9 @@ fun AppButton(modifier: Modifier = Modifier, text: String, onClick: () -> Unit) 
             .then(modifier)
             .toAttrs()
     ) {
-        SpanText(text = text)
+        if (loading)
+            FaSpinner(size = IconSize.SM, modifier = Modifier.color(Colors.White))
+        else
+            SpanText(text = text)
     }
 }
