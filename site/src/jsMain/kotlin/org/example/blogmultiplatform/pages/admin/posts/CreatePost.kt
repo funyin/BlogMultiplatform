@@ -33,6 +33,9 @@ import org.example.blogmultiplatform.modules.posts.CreatePostScreenEventHandler
 import org.example.blogmultiplatform.modules.posts.CreatePostViewModel
 import org.example.blogmultiplatform.res.Res
 import org.example.blogmultiplatform.ui.createPost.CreatePostContract
+import org.intellij.markdown.flavours.commonmark.CommonMarkFlavourDescriptor
+import org.intellij.markdown.html.HtmlGenerator
+import org.intellij.markdown.parser.MarkdownParser
 import org.jetbrains.compose.web.attributes.InputType
 import org.jetbrains.compose.web.css.AlignSelf
 import org.jetbrains.compose.web.css.CSSpxValue
@@ -52,6 +55,13 @@ fun CreatePostPage() {
     }
     val uiState by viewModel.observeStates().collectAsState()
     val createPostState = uiState.createPostState
+    LaunchedEffect(uiState.content) {
+        val src = uiState.content
+        val flavour = CommonMarkFlavourDescriptor()
+        val parsedTree = MarkdownParser(flavour).buildMarkdownTreeFromString(src)
+        val html = HtmlGenerator(src, parsedTree, flavour).generateHtml()
+        document.getElementById(Res.Id.previewId)?.innerHTML = html
+    }
     AdminPageLayout {
         Column(
             modifier = Modifier.fillMaxSize().maxWidth(700.px).align(Alignment.Center)
@@ -186,6 +196,7 @@ fun CreatePostPage() {
                 }
                 Div(
                     attrs = Modifier.id(Res.Id.previewId).fillMaxSize()
+                        .padding(leftRight = 20.px, topBottom = 16.px)
                         .visibility(if (uiState.showPreview) Visibility.Visible else Visibility.Hidden)
                         .overflow(Overflow.Auto).scrollBehavior(ScrollBehavior.Smooth).toAttrs()
                 ) {
@@ -200,11 +211,11 @@ fun CreatePostPage() {
                 viewModel.trySend(CreatePostContract.Inputs.CreatePost)
             }
         }
-        if (createPostState is UiState.Error)
-            MessagePopup(message = createPostState.errorMessage) {
-                viewModel.trySend(CreatePostContract.Inputs.ClosePopup)
-            }
     }
+    if (createPostState is UiState.Error)
+        MessagePopup(message = createPostState.errorMessage) {
+            viewModel.trySend(CreatePostContract.Inputs.ClosePopup)
+        }
 }
 
 private val Res.Id.Companion.previewId: String

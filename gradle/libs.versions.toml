@@ -8,6 +8,7 @@ serialization-plugin = "1.9.0"
 ktor-version="2.3.4"
 ballast-version="4.0.0"
 kotlinx-datetime="0.4.1"
+markdown="0.5.0"
 
 [libraries]
 kobweb-api = { module = "com.varabyte.kobweb:kobweb-api", version.ref = "kobweb" }
@@ -26,6 +27,7 @@ ktor-content-negotiation= { module = "io.ktor:ktor-client-content-negotiation", 
 ballast-core= { module = "io.github.copper-leaf:ballast-core", version.ref = "ballast-version" }
 ballast-saved-state= { module = "io.github.copper-leaf:ballast-saved-state", version.ref = "ballast-version" }
 kotlinx-datetime= { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+markdown= { module = "org.jetbrains:markdown", version.ref = "markdown" }
 
 [plugins]
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "jetbrains-compose" }

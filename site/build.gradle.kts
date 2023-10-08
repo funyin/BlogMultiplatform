@@ -56,8 +56,8 @@ kotlin {
                 implementation(libs.ktor.client.logging)
                 implementation(libs.ktor.client.serialization)
                 implementation(libs.ktor.content.negotiation)
-//                implementation(libs.ballast.core)
                 implementation(libs.ballast.saved.state)
+                implementation(libs.markdown)
                 // implementation(libs.kobwebx.markdown)
             }
         }
