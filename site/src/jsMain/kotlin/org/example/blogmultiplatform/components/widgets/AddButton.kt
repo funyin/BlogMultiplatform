@@ -17,6 +17,7 @@ import org.example.blogmultiplatform.core.AppColors
 import org.example.blogmultiplatform.res.PAGE_WIDTH
 import org.example.blogmultiplatform.res.Res
 import org.example.blogmultiplatform.res.createPost
+import org.jetbrains.compose.web.css.Position
 import org.jetbrains.compose.web.css.ms
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.css.vh
@@ -28,7 +29,9 @@ fun AddButton() {
     Box(
         modifier = Modifier.height(100.vh).fillMaxWidth()
             .maxWidth(Res.Dimens.PAGE_WIDTH.px)
-//            .position(Position.Fixed)
+            .position(Position.Fixed)
+            .bottom(0.px)
+            .right(0.px)
             .styleModifier {
                 pointerEvents(PointerEvents.None)
             },

@@ -6,7 +6,9 @@ import com.varabyte.kobweb.api.data.getValue
 import com.varabyte.kobweb.api.http.setBodyText
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.example.blogmultiplatform.data.MongoController
+import org.example.blogmultiplatform.data.ApiController
+import org.example.blogmultiplatform.data.AuthController.checkUserId
+import org.example.blogmultiplatform.data.AuthController.login
 import org.example.blogmultiplatform.models.LoginRequest
 
 @Api(routeOverride = "login")
@@ -16,7 +18,7 @@ suspend fun login(context: ApiContext) {
             Json.decodeFromString<LoginRequest>(it)
         }
         val user = userRequest?.let {
-            context.data.getValue<MongoController>().login(it)
+            context.data.getValue<ApiController>().login(it)
         }
         if (user == null) {
             context.res.setBodyText(Json.encodeToString("User doesn't exist"))
@@ -36,7 +38,7 @@ suspend fun checkUserId(context: ApiContext) {
             Json.decodeFromString<String>(it)
         }
         val result = useId?.let {
-            context.data.getValue<MongoController>().checkUserId(useId)
+            context.data.getValue<ApiController>().checkUserId(useId)
         }
         result?.let {
             context.res.setBodyText(Json.encodeToString(result))

@@ -5,11 +5,11 @@ import com.varabyte.kobweb.compose.css.*
 import com.varabyte.kobweb.compose.file.loadDataUrlFromDisk
 import com.varabyte.kobweb.compose.foundation.layout.*
 import com.varabyte.kobweb.compose.ui.*
+import com.varabyte.kobweb.compose.ui.graphics.Color
 import com.varabyte.kobweb.compose.ui.graphics.Colors
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.core.rememberPageContext
-import com.varabyte.kobweb.silk.components.forms.Switch
 import com.varabyte.kobweb.silk.components.forms.SwitchSize
 import com.varabyte.kobweb.silk.components.graphics.Image
 import com.varabyte.kobweb.silk.components.layout.SimpleGrid
@@ -19,29 +19,39 @@ import com.varabyte.kobweb.silk.components.style.ComponentVariant
 import com.varabyte.kobweb.silk.components.style.breakpoint.Breakpoint
 import com.varabyte.kobweb.silk.components.style.hover
 import com.varabyte.kobweb.silk.components.style.toModifier
-import com.varabyte.kobweb.silk.components.text.SpanText
 import com.varabyte.kobweb.silk.theme.breakpoint.rememberBreakpoint
 import kotlinx.browser.document
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.example.blogmultiplatform.components.layouts.AdminPageLayout
 import org.example.blogmultiplatform.components.widgets.*
 import org.example.blogmultiplatform.core.AppColors
-import org.example.blogmultiplatform.models.Category
-import org.example.blogmultiplatform.models.EditorKey
-import org.example.blogmultiplatform.models.UiState
-import org.example.blogmultiplatform.models.icon
-import org.example.blogmultiplatform.modules.posts.CreatePostScreenEventHandler
-import org.example.blogmultiplatform.modules.posts.CreatePostViewModel
+import org.example.blogmultiplatform.models.*
+import org.example.blogmultiplatform.modules.posts.create.CreatePostScreenEventHandler
+import org.example.blogmultiplatform.modules.posts.create.CreatePostViewModel
 import org.example.blogmultiplatform.res.Res
 import org.example.blogmultiplatform.ui.createPost.CreatePostContract
 import org.intellij.markdown.flavours.commonmark.CommonMarkFlavourDescriptor
 import org.intellij.markdown.html.HtmlGenerator
 import org.intellij.markdown.parser.MarkdownParser
 import org.jetbrains.compose.web.attributes.InputType
+import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.css.AlignSelf
-import org.jetbrains.compose.web.css.CSSpxValue
-import org.jetbrains.compose.web.css.ms
-import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.Div
+import org.w3c.dom.HTMLTextAreaElement
+
+private val Res.Id.Companion.postContent: String
+    get() = "content"
+val postContentStyle by ComponentStyle {
+    base {
+        Modifier
+    }
+    cssRule(" pre") {
+        Modifier.background(Color.rgb(0x0d1117))
+            .padding(8.px)
+            .borderRadius(4.px)
+    }
+}
 
 @Page
 @Composable
@@ -61,6 +71,10 @@ fun CreatePostPage() {
         val parsedTree = MarkdownParser(flavour).buildMarkdownTreeFromString(src)
         val html = HtmlGenerator(src, parsedTree, flavour).generateHtml()
         document.getElementById(Res.Id.previewId)?.innerHTML = html
+        launch {
+            delay(100)
+            js("hljs.highlightAll()") as? Unit
+        }
     }
     AdminPageLayout {
         Column(
@@ -138,8 +152,7 @@ fun CreatePostPage() {
                     placeholder = "Image Url",
                 )
                 if (!uiState.pasteImageUrl) AppButton(
-                    modifier = Modifier.width(92.px).margin(left = 14.px),
-                    text = "Upload"
+                    modifier = Modifier.width(92.px).margin(left = 14.px), text = "Upload"
                 ) {
                     document.loadDataUrlFromDisk(accept = "image/png, image/jpg") {
                         viewModel.trySend(CreatePostContract.Inputs.ImageUrl(filename))
@@ -152,7 +165,9 @@ fun CreatePostPage() {
                 Row(
                     modifier = Modifier.height(54.px).borderRadius(4.px)
                         .thenIf(breakpoint >= Breakpoint.SM, Modifier.margin(right = 14.px))
-                        .background(AppColors.LightGrey.rgb),
+                        .background(AppColors.LightGrey.rgb)
+                        .transition(CSSTransition(TransitionProperty.of("opacity"), duration = 300.ms))
+                        .thenIf(uiState.showPreview, Modifier.pointerEvents(PointerEvents.None).opacity(50.percent)),
                     horizontalArrangement = if (breakpoint < Breakpoint.SM) Arrangement.Center else Arrangement.Start
                 ) {
                     for (key in EditorKey.entries) {
@@ -161,7 +176,16 @@ fun CreatePostPage() {
                             iconSize = if (key == EditorKey.CapsOff) 14.px else 18.px,
                             active = uiState.activeKeys.contains(key)
                         ) {
-                            viewModel.trySend(CreatePostContract.Inputs.ToggleEditorKey(key))
+                            val areaElement = document.getElementById(Res.Id.postContent) as HTMLTextAreaElement
+                            scope.launch {
+                                val position = areaElement.selectionEnd
+                                viewModel.sendAndAwaitCompletion(CreatePostContract.Inputs.ToggleEditorKey(key,
+                                    selection = areaElement.selectionEnd?.let { areaElement.selectionStart?.until(it) }
+                                        ?: (uiState.content.lastIndex until uiState.content.lastIndex)))
+                                areaElement.focus()
+                                val end = (position ?: uiState.content.lastIndex) + key.stylingCursorOffset
+                                areaElement.setSelectionRange(start = end, end = end)
+                            }
                         }
                     }
                 }
@@ -187,7 +211,8 @@ fun CreatePostPage() {
                     .background(AppColors.LightGrey.rgb)
             ) {
                 CustomTextArea(
-                    modifier = Modifier.fillMaxSize().resize(Resize.None).background(AppColors.LightGrey.rgb)
+                    modifier = Modifier.fillMaxSize().id(Res.Id.postContent).resize(Resize.None)
+                        .background(AppColors.LightGrey.rgb)
                         .visibility(if (uiState.showPreview) Visibility.Hidden else Visibility.Visible),
                     value = uiState.content,
                     placeholder = "Type here..."
@@ -195,12 +220,12 @@ fun CreatePostPage() {
                     viewModel.trySend(CreatePostContract.Inputs.UpdateContent(it))
                 }
                 Div(
-                    attrs = Modifier.id(Res.Id.previewId).fillMaxSize()
-                        .padding(leftRight = 20.px, topBottom = 16.px)
+                    attrs = Modifier.id(Res.Id.previewId).fillMaxSize().padding(leftRight = 20.px, topBottom = 16.px)
                         .visibility(if (uiState.showPreview) Visibility.Visible else Visibility.Hidden)
-                        .overflow(Overflow.Auto).scrollBehavior(ScrollBehavior.Smooth).toAttrs()
+                        .overflow(Overflow.Auto).scrollBehavior(ScrollBehavior.Smooth)
+                        .then(postContentStyle.toModifier())
+                        .toAttrs()
                 ) {
-
                 }
             }
             AppButton(
@@ -212,9 +237,36 @@ fun CreatePostPage() {
             }
         }
     }
-    if (createPostState is UiState.Error)
-        MessagePopup(message = createPostState.errorMessage) {
-            viewModel.trySend(CreatePostContract.Inputs.ClosePopup)
+    if (createPostState is UiState.Error) MessagePopup(message = createPostState.errorMessage) {
+        viewModel.trySend(CreatePostContract.Inputs.ClosePopup)
+    }
+    if (uiState.showLinkPopup != null)
+        LinkPopup(message = uiState.content.slice(uiState.showLinkPopup!!),
+            onDialogDismissed = { viewModel.trySend(CreatePostContract.Inputs.CloseLinkPopup) }) { text, link ->
+            viewModel.trySend(CreatePostContract.Inputs.CloseLinkPopup)
+            viewModel.trySend(
+                CreatePostContract.Inputs.UpdateContent(
+                    uiState.content.replaceRange(
+                        uiState.showLinkPopup!!, EditorKey.Link.controlStyle(
+                            text, link
+                        )
+                    )
+                )
+            )
+        }
+    if (uiState.showImagePopup != null)
+        LinkPopup(message = uiState.content.slice(uiState.showImagePopup!!),
+            onDialogDismissed = { viewModel.trySend(CreatePostContract.Inputs.CloseImagePopup) }) { text, link ->
+            viewModel.trySend(CreatePostContract.Inputs.CloseImagePopup)
+            viewModel.trySend(
+                CreatePostContract.Inputs.UpdateContent(
+                    uiState.content.replaceRange(
+                        uiState.showImagePopup!!, EditorKey.Image.controlStyle(
+                            text, link
+                        )
+                    )
+                )
+            )
         }
 }
 
@@ -248,24 +300,3 @@ private fun EditorKeyView(icon: String, iconSize: CSSpxValue, active: Boolean, o
     }
 }
 
-@Composable
-private fun SwitchTile(
-    modifier: Modifier = Modifier,
-    switchSize: SwitchSize = SwitchSize.MD,
-    text: String,
-    checked: Boolean,
-    onCheckChanged: (Boolean) -> Unit
-) {
-    Row(modifier = Modifier.margin(right = 24.px).then(modifier), verticalAlignment = Alignment.CenterVertically) {
-        Switch(
-            checked = checked,
-            onCheckedChange = onCheckChanged,
-            size = switchSize,
-            modifier = Modifier.margin(right = 10.px)
-        )
-        SpanText(
-            text = text,
-            modifier = Modifier.fontSize(14.px).color(AppColors.HalfBlack.rgb).fontFamily(Res.Strings.FONT_FAMILY)
-        )
-    }
-}

@@ -25,6 +25,15 @@ kobweb {
                     rel = "stylesheet"
                     href = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
                 }
+
+                link {
+                    rel = "stylesheet"
+                    href = "/styles/github-dark.css"
+                }
+
+                script {
+                    src = "/scripts/highlight.min.js"
+                }
             }
         }
     }
@@ -58,6 +67,7 @@ kotlin {
                 implementation(libs.ktor.content.negotiation)
                 implementation(libs.ballast.saved.state)
                 implementation(libs.markdown)
+                implementation(libs.kotlinx.datetime)
                 // implementation(libs.kobwebx.markdown)
             }
         }

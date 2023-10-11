@@ -6,7 +6,7 @@ import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.modifiers.classNames
 import com.varabyte.kobweb.compose.ui.modifiers.fillMaxSize
-import com.varabyte.kobweb.compose.ui.modifiers.height
+import com.varabyte.kobweb.compose.ui.modifiers.maxHeight
 import com.varabyte.kobweb.compose.ui.modifiers.padding
 import com.varabyte.kobweb.compose.ui.toAttrs
 import com.varabyte.kobweb.silk.components.text.SpanText
@@ -15,9 +15,9 @@ import org.jetbrains.compose.web.css.vh
 import org.jetbrains.compose.web.dom.Div
 
 @Composable
-fun Spinner() {
+fun Spinner(modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier.fillMaxSize().height(100.vh)
+        modifier = Modifier.fillMaxSize().maxHeight(100.vh).then(modifier)
             .padding(topBottom = 50.px), contentAlignment = Alignment.Center
     ) {
         Div(

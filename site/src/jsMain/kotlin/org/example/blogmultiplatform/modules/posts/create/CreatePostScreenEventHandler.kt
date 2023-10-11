@@ -1,4 +1,4 @@
-package org.example.blogmultiplatform.modules.posts
+package org.example.blogmultiplatform.modules.posts.create
 
 import com.copperleaf.ballast.EventHandler
 import com.copperleaf.ballast.EventHandlerScope
@@ -12,11 +12,10 @@ import org.example.blogmultiplatform.ui.createPost.CreatePostContract.State
 class CreatePostScreenEventHandler(val pageContext: PageContext) :
     EventHandler<Inputs, Events, State> {
 
-    override suspend fun EventHandlerScope<Inputs, Events, State>.handleEvent(event: Events) {
+    override suspend fun EventHandlerScope<Inputs, Events, State>.handleEvent(event: Events) =
         when (event) {
             Events.PostCreated -> {
                 pageContext.router.navigateTo(Res.Routes.postSuccess)
             }
         }
-    }
 }

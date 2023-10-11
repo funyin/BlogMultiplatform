@@ -18,28 +18,40 @@ object ApiClient {
     val client = HttpClient(Js) {
         install(Logging) {
             logger = Logger.DEFAULT
-            level = LogLevel.HEADERS
+            level = LogLevel.ALL
         }
         install(ContentNegotiation) { json(Json) }
     }
 
-    suspend inline fun <reified T> get(url: String, parameters: Map<String, String>): T {
+    suspend inline fun <reified T> get(url: String, parameters: Map<String, Any> = emptyMap()): T {
         return client.get(url) {
             this.url {
                 for (param in parameters) {
-                    this.parameters.append(param.key, param.value)
+                    this.parameters.append(param.key, param.value.toString())
                 }
             }
-        }.run {
-            println(bodyAsText())
-            if (this.status.value in HttpStatusCode.OK.value..HttpStatusCode.MultiStatus.value)
-                body<T>()
-            else
-                throw Exception(
-                    message = Json.decodeFromString<Map<String, JsonElement>>(bodyAsText())["message"]
-                        ?.jsonPrimitive?.content
-                )
+        }.parseResponse()
+    }
 
-        }
+    suspend inline fun <reified T> post(url: String, parameters: Map<String, Any> = emptyMap(), body: Any): T {
+        return client.post(url) {
+            this.url {
+                for (param in parameters) {
+                    this.parameters.append(param.key, param.value.toString())
+                }
+            }
+            setBody(body)
+            this.contentType(ContentType.Application.Json)
+        }.parseResponse<T>()
+    }
+
+    suspend inline fun <reified T> HttpResponse.parseResponse(): T {
+        return if (this.status.value in HttpStatusCode.OK.value..HttpStatusCode.MultiStatus.value)
+            body<T>()
+        else
+            throw Exception(
+                message = Json.decodeFromString<Map<String, JsonElement>>(bodyAsText())["message"]
+                    ?.jsonPrimitive?.content
+            )
     }
 }

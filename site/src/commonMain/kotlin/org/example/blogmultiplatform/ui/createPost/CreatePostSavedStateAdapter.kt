@@ -20,16 +20,13 @@ class CreatePostSavedStateAdapter(
     override suspend fun SaveStateScope<
             CreatePostContract.Inputs,
             CreatePostContract.Events,
-            CreatePostContract.State>.save() {
-        saveDiff({ this }) { state ->
-            prefs.stateData = Json.encodeToString(state)
-        }
+            CreatePostContract.State>.save() = saveDiff({ this }) { state ->
+        prefs.stateData = Json.encodeToString(state)
     }
 
     override suspend fun RestoreStateScope<
             CreatePostContract.Inputs,
             CreatePostContract.Events,
-            CreatePostContract.State>.restore(): CreatePostContract.State {
-        return Json.decodeFromString<CreatePostContract.State>(prefs.stateData)
-    }
+            CreatePostContract.State>.restore(): CreatePostContract.State =
+        Json.decodeFromString<CreatePostContract.State>(prefs.stateData)
 }

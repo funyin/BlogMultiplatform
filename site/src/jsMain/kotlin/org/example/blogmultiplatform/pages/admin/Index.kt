@@ -61,7 +61,7 @@ private fun JokeContent() {
                 SessionManager.lastFetchedJoke = joke
         }
     }
-    Box(modifier = Modifier.fillMaxWidth().height(100.vh), contentAlignment = Alignment.Center) {
+    Box(modifier = Modifier.fillMaxWidth().fillMaxHeight().maxHeight(100.vh), contentAlignment = Alignment.Center) {
         if (loadingJoke)
             Spinner()
         else

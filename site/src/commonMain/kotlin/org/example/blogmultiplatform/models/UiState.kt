@@ -1,32 +1,27 @@
 package org.example.blogmultiplatform.models
 
-import kotlinx.serialization.Serializable
-
-@Serializable
-sealed class UiState<T> {
-    @Serializable
+sealed class UiState<out T> {
     data class Success<T>(val data: T) : UiState<T>()
-
-    @Serializable
-    class Loading<T> : UiState<T>()
-
-    @Serializable
+    data object Loading : UiState<Nothing>()
     data class Error<T>(val errorMessage: String) : UiState<T>()
+    data object Initial : UiState<Nothing>()
 
-    @Serializable
-    class Initial<T> : UiState<T>()
-
+    val isInitial: Boolean
+        get() = this is Initial
     val isLoading: Boolean
         get() = this is Loading
     val isError: Boolean
         get() = this is Error
     val isSuccess: Boolean
         get() = this is Success
+    val getData: T
+        get() = (this as Success).data
 
-    fun <W> whenOn(error: () -> W, loading: () -> W, success: () -> W, default: () -> W): W = when (this) {
-        is Error -> error()
-        is Loading -> loading()
-        is Success -> success()
-        else -> default()
-    }
+    fun <W> whenOn(error: ((String) -> W)? = null, loading: W? = null, success: ((T) -> W)? = null, default: W) =
+        when (this) {
+            is Error -> error?.invoke(errorMessage)
+            is Loading -> loading
+            is Success -> success?.invoke(getData)
+            else -> default
+        }
 }

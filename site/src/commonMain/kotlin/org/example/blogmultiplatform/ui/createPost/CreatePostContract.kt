@@ -1,6 +1,7 @@
 package org.example.blogmultiplatform.ui.createPost
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import org.example.blogmultiplatform.models.Category
 import org.example.blogmultiplatform.models.EditorKey
 import org.example.blogmultiplatform.models.UiState
@@ -20,9 +21,14 @@ object CreatePostContract {
         val activeKeys: List<EditorKey> = emptyList(),
         val showPreview: Boolean = false,
         val content: String = "",
-        val createPostState: UiState<Boolean> = UiState.Initial()
-    ){
-        companion object{
+        @Transient
+        val createPostState: UiState<Boolean> = UiState.Initial,
+        @Transient
+        val showLinkPopup: IntRange? = null,
+        @Transient
+        val showImagePopup: IntRange? = null
+    ) {
+        companion object {
             val initial = State()
         }
     }
@@ -36,13 +42,16 @@ object CreatePostContract {
         data class UpdateCategory(val value: Category) : Inputs
         data class UpdatePastImageUrl(val value: Boolean) : Inputs
         data class ImageUrl(val value: String) : Inputs
-        data class ToggleEditorKey(val key: EditorKey) : Inputs
+        data class ToggleEditorKey(val key: EditorKey, val selection: IntRange) : Inputs
         data object ToggleShowPreview : Inputs
         data class UpdateContent(val value: String) : Inputs
         data object CreatePost : Inputs
         data class CreatePostResponse(val createPostState: UiState<Boolean>) : Inputs
         data object ClosePopup : Inputs
         data class ShowErrorMessage(val message: String) : Inputs
+        data class ShowLinkPopup(val range: IntRange, val keyType: EditorKey) : Inputs
+        data object CloseLinkPopup : Inputs
+        data object CloseImagePopup : Inputs
     }
 
     sealed interface Events {

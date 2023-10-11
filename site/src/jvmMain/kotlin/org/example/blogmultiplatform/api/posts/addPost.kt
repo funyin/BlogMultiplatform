@@ -6,7 +6,8 @@ import com.varabyte.kobweb.api.data.getValue
 import com.varabyte.kobweb.api.http.setBodyText
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.example.blogmultiplatform.data.MongoController
+import org.example.blogmultiplatform.data.ApiController
+import org.example.blogmultiplatform.data.PostsController.addPost
 import org.example.blogmultiplatform.models.Post
 
 @Api
@@ -19,7 +20,7 @@ suspend fun addPost(context: ApiContext) {
             context.res.setBodyText("Post is required")
             return
         }
-        val response = context.data.getValue<MongoController>().addPost(post)
+        val response = context.data.getValue<ApiController>().addPost(post)
         context.res.setBodyText(Json.encodeToString(response))
     } catch (e: Exception) {
         context.res.setBodyText(Json.encodeToString(e.message))
