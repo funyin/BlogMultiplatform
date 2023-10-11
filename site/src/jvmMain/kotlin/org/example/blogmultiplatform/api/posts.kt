@@ -15,7 +15,8 @@ suspend fun posts(context: ApiContext) {
     try {
         val page: Int = context.req.params["page"]?.toInt() ?: 1
         val size: Int = context.req.params["size"]?.toInt() ?: 8
-        val response = context.data.getValue<ApiController>().getPosts(page, size)
+        val search = context.req.params["search"]
+        val response = context.data.getValue<ApiController>().getPosts(search ,page, size)
         context.res.setBodyText(Json.encodeToString(ApiResponse(message = "Success", data = response)))
         context.res.contentType = "application/json"
     } catch (e: Exception) {

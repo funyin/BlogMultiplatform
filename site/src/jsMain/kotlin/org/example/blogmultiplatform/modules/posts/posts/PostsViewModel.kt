@@ -1,16 +1,30 @@
 package org.example.blogmultiplatform.modules.posts.posts
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import org.example.blogmultiplatform.models.PostLight
 import org.example.blogmultiplatform.models.UiState
 import org.example.blogmultiplatform.modules.posts.PostRepository
 
+@OptIn(FlowPreview::class)
 class PostsViewModel(private val viewModelScope: CoroutineScope) {
     private val _uiState = MutableStateFlow(PostsUIState())
     val uiState = _uiState.asStateFlow()
     private val repository = PostRepository()
+
+    init {
+        viewModelScope.launch {
+            uiState.map { it.searchValue }
+                .distinctUntilChanged()
+                .debounce(300L)
+                .collectLatest {
+                    postState(_uiState.value.copy(page = 0))
+                    showMore()
+                }
+        }
+    }
 
     fun postState(state: PostsUIState) {
         _uiState.update { state }
@@ -20,7 +34,7 @@ class PostsViewModel(private val viewModelScope: CoroutineScope) {
         send(UiState.Loading)
         if (page == 1)
             postState(_uiState.value.copy(postsState = UiState.Loading))
-        val response = repository.posts(page, size)
+        val response = repository.posts(search = _uiState.value.searchValue, page, size)
         val currentState = _uiState.value
         val currentPostsState = currentState.postsState
         postState(

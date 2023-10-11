@@ -11,12 +11,13 @@ import org.example.blogmultiplatform.res.Res
 import org.example.blogmultiplatform.res.apiBaseUrl
 
 class PostRepository {
-    suspend fun posts(page: Int, size: Int): UiState<List<PostLight>> {
+    suspend fun posts(search: String? = null, page: Int, size: Int): UiState<List<PostLight>> {
         return try {
-            val response = ApiClient.get<ApiResponse<List<PostLight>>>(
-                "${Res.Strings.apiBaseUrl}posts",
-                parameters = mapOf("page" to page, "size" to size)
-            )
+            val response = ApiClient.get<ApiResponse<List<PostLight>>>("${Res.Strings.apiBaseUrl}posts",
+                parameters = mutableMapOf("page" to page, "size" to size).run {
+                    if (!search.isNullOrEmpty()) this + ("search" to search)
+                    else this
+                })
             UiState.Success(response.data)
         } catch (e: Exception) {
             UiState.Error(errorMessage = e.message!!.toString())
@@ -28,8 +29,7 @@ class PostRepository {
         try {
             emit(UiState.Loading)
             val response = ApiClient.post<ApiResponse<Boolean>>(
-                "${Res.Strings.apiBaseUrl}posts/deletemany",
-                body = DeletePostsRequest(items)
+                "${Res.Strings.apiBaseUrl}posts/deletemany", body = DeletePostsRequest(items)
             )
             emit(UiState.Success(response.data))
         } catch (e: Exception) {

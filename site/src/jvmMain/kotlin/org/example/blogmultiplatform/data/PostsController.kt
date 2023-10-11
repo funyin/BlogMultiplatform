@@ -12,12 +12,17 @@ object PostsController {
     }
 
     suspend fun ApiController.getPosts(
+        search: String?,
         page: Int,
         size: Int
     ): List<PostLight> {
+        val searchPattern = search?.toRegex(RegexOption.IGNORE_CASE)?.toPattern()
         return postsCollection
             .withDocumentClass(PostLight::class.java)
-            .find()
+            .find(
+                searchPattern
+                    ?.let { Filters.regex(PostLight::title.name, it) } ?: Filters.empty()
+            )
             .sort(sort = descending(PostLight::date.name))
             .skip((page - 1) * size).limit(size).toList()
     }
