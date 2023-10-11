@@ -52,7 +52,7 @@ fun AddButton() {
                     bottom = if (breakpoint > Breakpoint.MD) 40.px else 20.px,
                 )
                 .onClick {
-                    context.router.navigateTo(Res.Routes.createPost)
+                    context.router.navigateTo(Res.Routes.createPost())
                 },
             contentAlignment = Alignment.Center
         ) {

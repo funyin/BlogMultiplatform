@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import org.example.blogmultiplatform.models.Category
 import org.example.blogmultiplatform.models.EditorKey
+import org.example.blogmultiplatform.models.Post
 import org.example.blogmultiplatform.models.UiState
 
 object CreatePostContract {
@@ -24,13 +25,20 @@ object CreatePostContract {
         @Transient
         val createPostState: UiState<Boolean> = UiState.Initial,
         @Transient
+        val updatePostState: UiState<Boolean> = UiState.Initial,
+        @Transient
         val showLinkPopup: IntRange? = null,
         @Transient
-        val showImagePopup: IntRange? = null
+        val showImagePopup: IntRange? = null,
+        val postId: String? = null,
+        @Transient
+        val getPostState: UiState<Post> = UiState.Initial
     ) {
         companion object {
             val initial = State()
         }
+
+        val updateMode: Boolean = postId != null || getPostState != UiState.Initial
     }
 
     sealed interface Inputs {
@@ -46,15 +54,20 @@ object CreatePostContract {
         data object ToggleShowPreview : Inputs
         data class UpdateContent(val value: String) : Inputs
         data object CreatePost : Inputs
-        data class CreatePostResponse(val createPostState: UiState<Boolean>) : Inputs
+        data object UpdatePost : Inputs
+        data class CreatePostResponse(val state: UiState<Boolean>) : Inputs
+        data class UpdatePostResponse(val state: UiState<Boolean>) : Inputs
         data object ClosePopup : Inputs
         data class ShowErrorMessage(val message: String) : Inputs
         data class ShowLinkPopup(val range: IntRange, val keyType: EditorKey) : Inputs
         data object CloseLinkPopup : Inputs
         data object CloseImagePopup : Inputs
+        data object GetPost : Inputs
+        data class GetPostResponse(val state: UiState<Post>) : Inputs
     }
 
     sealed interface Events {
         data object PostCreated : Events
+        data object PostUpdated : Events
     }
 }

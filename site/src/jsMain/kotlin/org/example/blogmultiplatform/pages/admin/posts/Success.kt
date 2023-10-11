@@ -12,6 +12,7 @@ import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.core.rememberPageContext
 import com.varabyte.kobweb.silk.components.graphics.Image
 import com.varabyte.kobweb.silk.components.text.SpanText
+import io.ktor.http.*
 import kotlinx.coroutines.delay
 import org.example.blogmultiplatform.components.widgets.AuthGuard
 import org.example.blogmultiplatform.res.Res
@@ -26,7 +27,8 @@ import org.jetbrains.compose.web.css.vw
 @Composable
 fun SuccessPage() {
     val context = rememberPageContext()
-    LaunchedEffect(Unit){
+    val message = context.route.params["message"]?.decodeURLQueryComponent()
+    LaunchedEffect(Unit) {
         delay(3000)
         context.router.navigateTo(Res.Routes.posts)
     }
@@ -39,7 +41,7 @@ fun SuccessPage() {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Image(src = Res.Images.checkMark, modifier = Modifier.size(156.px))
                 SpanText(
-                    text = "Post Successfully Created!", modifier = Modifier.margin(top = 24.px).fontSize(24.px).color(
+                    text = message ?: "Success", modifier = Modifier.margin(top = 24.px).fontSize(24.px).color(
                         Colors.Black
                     )
                 )

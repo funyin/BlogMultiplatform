@@ -12,12 +12,13 @@ import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.silk.components.graphics.Image
 import com.varabyte.kobweb.silk.components.text.SpanText
+import io.ktor.client.engine.js.*
 import org.example.blogmultiplatform.components.layouts.AdminPageLayout
 import org.example.blogmultiplatform.components.widgets.AddButton
 import org.example.blogmultiplatform.components.widgets.Spinner
 import org.example.blogmultiplatform.core.AppColors
 import org.example.blogmultiplatform.core.SessionManager
-import org.example.blogmultiplatform.core.network.ApiClient
+import org.example.blogmultiplatform.data.api.core.ApiClient
 import org.example.blogmultiplatform.models.RandomJoke
 import org.example.blogmultiplatform.res.Res
 import org.example.blogmultiplatform.res.jokeAPI_KEY
@@ -48,7 +49,7 @@ private fun JokeContent() {
         val today = Date()
         if (today.getDate() != lastFetchDate?.getDate()) {
             joke = try {
-                ApiClient.get(
+                ApiClient(Js.create()).get(
                     Res.Strings.jokesBaseUrl, parameters = mapOf(
                         "api-key" to Res.Strings.jokeAPI_KEY,
                         "max-length" to "180",

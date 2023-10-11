@@ -11,6 +11,7 @@ import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.compose.ui.thenIf
 import com.varabyte.kobweb.compose.ui.toAttrs
 import com.varabyte.kobweb.core.Page
+import com.varabyte.kobweb.core.rememberPageContext
 import com.varabyte.kobweb.silk.components.forms.Checkbox
 import com.varabyte.kobweb.silk.components.forms.CheckboxSize
 import com.varabyte.kobweb.silk.components.forms.SwitchSize
@@ -24,7 +25,10 @@ import org.example.blogmultiplatform.components.widgets.*
 import org.example.blogmultiplatform.core.AppColors
 import org.example.blogmultiplatform.models.PostLight
 import org.example.blogmultiplatform.models.UiState
+import org.example.blogmultiplatform.modules.posts.posts.PostsUIState
 import org.example.blogmultiplatform.modules.posts.posts.PostsViewModel
+import org.example.blogmultiplatform.res.Res
+import org.example.blogmultiplatform.res.createPost
 import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.ms
 import org.jetbrains.compose.web.css.percent
@@ -35,7 +39,15 @@ import org.jetbrains.compose.web.dom.Progress
 @Composable
 fun PostsPage() {
     val scope = rememberCoroutineScope()
-    val viewModel = remember { PostsViewModel(scope) }
+    val context = rememberPageContext()
+    val viewModel = remember {
+        PostsViewModel(
+            scope, initialState = PostsUIState(
+                searchValue = context.route.params["search"]
+                    ?: ""
+            )
+        )
+    }
     LaunchedEffect(Unit) {
         viewModel.showMore(10)
     }
@@ -47,9 +59,15 @@ fun PostsPage() {
             modifier = Modifier.fillMaxSize().padding(top = 50.px, leftRight = 10.percent),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            SearchInput(value = uiState.searchValue) {
-                viewModel.postState(uiState.copy(searchValue = it))
-            }
+            if (!uiState.selectMode)
+                SearchInput(
+                    modifier = Modifier
+                        .thenIf(uiState.selectMode, Modifier.visibility(Visibility.Hidden))
+                        .transition(CSSTransition(TransitionProperty.of("visibility"), duration = 200.ms)),
+                    value = uiState.searchValue
+                ) {
+                    viewModel.postState(uiState.copy(searchValue = it))
+                }
             Row(
                 modifier = Modifier.fillMaxWidth().margin(top = 24.px), verticalAlignment = Alignment.CenterVertically
             ) {
@@ -73,52 +91,58 @@ fun PostsPage() {
                 }
             }
             when (postsState) {
-                is UiState.Error -> SpanText(postsState.errorMessage)
+                is UiState.Error -> AppErrorView(text = postsState.errorMessage) {
+                    viewModel.showMore()
+                }
+
                 UiState.Initial,
                 UiState.Loading -> Spinner()
 
                 is UiState.Success -> {
                     val numColumns = remember { numColumns(base = 1, sm = 2, md = 3, lg = 4) }
-                    SimpleGrid(
-                        numColumns = numColumns,
-                        modifier = Modifier.fillMaxWidth().margin(top = 24.px).width(100.percent)
-                    ) {
-                        postsState.getData.forEachIndexed { index, postLight ->
-                            PostPreview(
-                                modifier = numColumns.itemSpace(
-                                    index = index,
-                                    itemCount = postsState.getData.size,
-                                    horizontalGap = 20.px,
-                                    verticalGap = 20.px
-                                ),
-                                postLight = postLight,
-                                selectable = uiState.selectMode,
-                                checked = uiState.selectedPosts.any { it == postLight.id },
-                                onCheckChanged = {
-                                    if (it) {
-                                        viewModel.postState(
-                                            uiState.copy(
-                                                selectedPosts = arrayOf(
-                                                    *uiState.selectedPosts.toTypedArray(),
-                                                    postLight.id
-                                                ).toList()
+                    if (postsState.data.isEmpty())
+                        AppEmptyView(text = "No Posts Found")
+                    else
+                        SimpleGrid(
+                            numColumns = numColumns,
+                            modifier = Modifier.fillMaxWidth().margin(top = 24.px).width(100.percent)
+                        ) {
+                            postsState.data.forEachIndexed { index, postLight ->
+                                PostPreview(
+                                    modifier = numColumns.itemSpace(
+                                        index = index,
+                                        itemCount = postsState.data.size,
+                                        horizontalGap = 20.px,
+                                        verticalGap = 20.px
+                                    ),
+                                    postLight = postLight,
+                                    selectable = uiState.selectMode,
+                                    checked = uiState.selectedPosts.any { it == postLight.id },
+                                    onCheckChanged = {
+                                        if (it) {
+                                            viewModel.postState(
+                                                uiState.copy(
+                                                    selectedPosts = arrayOf(
+                                                        *uiState.selectedPosts.toTypedArray(),
+                                                        postLight.id
+                                                    ).toList()
+                                                )
                                             )
-                                        )
-                                    } else {
-                                        val list = uiState.selectedPosts.toMutableList()
-                                        list.removeAll { it == postLight.id }
-                                        viewModel.postState(
-                                            uiState.copy(
-                                                selectedPosts = list,
+                                        } else {
+                                            val list = uiState.selectedPosts.toMutableList()
+                                            list.removeAll { it == postLight.id }
+                                            viewModel.postState(
+                                                uiState.copy(
+                                                    selectedPosts = list,
+                                                )
                                             )
-                                        )
+                                        }
                                     }
+                                ) {
+                                    context.router.navigateTo(Res.Routes.createPost(postId = postLight.id))
                                 }
-                            ) {
-
                             }
                         }
-                    }
 
                     ShowMoreButton(uiState = uiState.showMoreState) {
                         viewModel.showMore(10)

@@ -95,14 +95,15 @@ fun CustomTextArea(
 }
 
 @Composable
-fun SearchInput(value: String, onChange: (String) -> Unit) {
+fun SearchInput(modifier: Modifier = Modifier, value: String, onChange: (String) -> Unit) {
     var hasFocus by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier.fillMaxWidth().maxWidth(350.px).height(54.px).background(AppColors.LightGrey.rgb)
             .padding(left = 20.px, top = 2.px, bottom = 2.px)
             .borderRadius(25.px)
             .border(style = LineStyle.None, color = AppColors.Primary.rgb, width = 0.px)
-            .thenIf(hasFocus, Modifier.border(width = 1.px, color = AppColors.Primary.rgb, style = LineStyle.Solid)),
+            .thenIf(hasFocus, Modifier.border(width = 1.px, color = AppColors.Primary.rgb, style = LineStyle.Solid))
+            .then(modifier),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(src = Res.Images.searchIcon, modifier = Modifier.size(20.px).color(Colors.White))

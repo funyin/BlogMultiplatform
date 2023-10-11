@@ -20,12 +20,12 @@ object SessionManager {
         localStorage.removeItem(Res.Strings.StoreKeys.user)
     }
 
-    fun setCreatePostState(state: String) {
-        localStorage[Res.Strings.StoreKeys.createPostState] = state
+    fun setCreatePostState(state: String, postId: String? = null) {
+        localStorage[Res.Strings.StoreKeys.createPostState + (postId ?: "")] = state
     }
 
-    fun getCreatePostState(): String {
-        return localStorage.getItem(Res.Strings.StoreKeys.createPostState)
+    fun getCreatePostState(postId: String? = null): String {
+        return localStorage.getItem(Res.Strings.StoreKeys.createPostState + (postId ?: ""))
             ?: Json.encodeToString(CreatePostContract.State())
     }
 

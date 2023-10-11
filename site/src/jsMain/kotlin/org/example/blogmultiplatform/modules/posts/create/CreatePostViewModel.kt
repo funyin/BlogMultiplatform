@@ -17,6 +17,7 @@ import org.example.blogmultiplatform.ui.createPost.CreatePostScreenInputHandler
 
 class CreatePostViewModel(
     eventHandler: EventHandler<Inputs, Events, State>,
+    postId: String?,
     coroutineScope: CoroutineScope
 ) : BasicViewModel<Inputs, Events, State>(
     BallastViewModelConfiguration.Builder()
@@ -25,8 +26,8 @@ class CreatePostViewModel(
             this += BallastSavedStateInterceptor(
                 adapter = CreatePostSavedStateAdapter(object : CreatePostSavedStateAdapter.Prefs {
                     override var stateData: String
-                        get() = SessionManager.getCreatePostState()
-                        set(value) = SessionManager.setCreatePostState(value)
+                        get() = SessionManager.getCreatePostState(postId = postId)
+                        set(value) = SessionManager.setCreatePostState(value, postId = postId)
 
                 })
             )
@@ -35,6 +36,6 @@ class CreatePostViewModel(
             }
             inputStrategy = FifoInputStrategy()
         }
-        .withViewModel(State(), inputHandler = CreatePostScreenInputHandler(postApi = PostApiImpl))
+        .withViewModel(State(postId = postId), inputHandler = CreatePostScreenInputHandler(postApi = PostApiImpl))
         .build(), eventHandler, coroutineScope
 )

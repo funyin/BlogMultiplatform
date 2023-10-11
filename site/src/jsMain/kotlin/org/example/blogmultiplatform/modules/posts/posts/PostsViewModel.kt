@@ -1,23 +1,26 @@
 package org.example.blogmultiplatform.modules.posts.posts
 
+import io.ktor.client.engine.js.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import org.example.blogmultiplatform.data.api.core.ApiClient
+import org.example.blogmultiplatform.data.repository.PostRepository
 import org.example.blogmultiplatform.models.PostLight
 import org.example.blogmultiplatform.models.UiState
-import org.example.blogmultiplatform.modules.posts.PostRepository
 
 @OptIn(FlowPreview::class)
-class PostsViewModel(private val viewModelScope: CoroutineScope) {
-    private val _uiState = MutableStateFlow(PostsUIState())
+class PostsViewModel(private val viewModelScope: CoroutineScope, initialState: PostsUIState) {
+    private val _uiState = MutableStateFlow(initialState)
     val uiState = _uiState.asStateFlow()
-    private val repository = PostRepository()
+    private val repository = PostRepository(ApiClient(Js.create()))
 
     init {
         viewModelScope.launch {
             uiState.map { it.searchValue }
                 .distinctUntilChanged()
+                .drop(1)
                 .debounce(300L)
                 .collectLatest {
                     postState(_uiState.value.copy(page = 0))

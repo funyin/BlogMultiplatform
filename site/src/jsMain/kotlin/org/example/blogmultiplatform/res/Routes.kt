@@ -1,12 +1,20 @@
 package org.example.blogmultiplatform.res
 
+import io.ktor.http.*
+
 val Res.Routes.Companion.login: String
     get() = "/login"
 val Res.Routes.Companion.adminHome: String
     get() = "/admin/"
-val Res.Routes.Companion.createPost: String
-    get() = "${posts}createpost"
+
+fun Res.Routes.Companion.createPost(postId: String? = null): String = "${posts}createpost".run {
+    postId?.let {
+        "$this/$postId"
+    } ?: this
+}
+
 val Res.Routes.Companion.posts: String
     get() = "${adminHome}posts/"
-val Res.Routes.Companion.postSuccess: String
-    get() = "${posts}success"
+
+fun Res.Routes.Companion.postSuccess(message: String? = null): String =
+    "${posts}success${message?.let { "?message=${it.encodeURLParameter()}" } ?: ""}"

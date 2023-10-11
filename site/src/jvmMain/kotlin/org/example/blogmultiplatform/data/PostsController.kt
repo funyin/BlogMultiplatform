@@ -2,13 +2,25 @@ package org.example.blogmultiplatform.data
 
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Sorts.descending
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
 import org.example.blogmultiplatform.models.Post
 import org.example.blogmultiplatform.models.PostLight
+import org.example.blogmultiplatform.models.UpdatePostRequest
 
 object PostsController {
     suspend fun ApiController.addPost(post: Post): Boolean {
         return postsCollection.insertOne(post).wasAcknowledged()
+    }
+
+    suspend fun ApiController.updatePost(post: UpdatePostRequest): Boolean {
+        return postsCollection
+            .withDocumentClass<UpdatePostRequest>()
+            .replaceOne(Filters.eq("_id", post.id), post).wasAcknowledged()
+    }
+
+    suspend fun ApiController.get(postId: String): Post? {
+        return postsCollection.find(Filters.eq("_id", postId)).firstOrNull()
     }
 
     suspend fun ApiController.getPosts(

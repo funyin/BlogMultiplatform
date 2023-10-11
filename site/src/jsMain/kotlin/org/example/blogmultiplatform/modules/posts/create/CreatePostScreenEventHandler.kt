@@ -15,7 +15,11 @@ class CreatePostScreenEventHandler(val pageContext: PageContext) :
     override suspend fun EventHandlerScope<Inputs, Events, State>.handleEvent(event: Events) =
         when (event) {
             Events.PostCreated -> {
-                pageContext.router.navigateTo(Res.Routes.postSuccess)
+                pageContext.router.navigateTo(Res.Routes.postSuccess(message = "Post Successfully Created!"))
+            }
+
+            Events.PostUpdated -> {
+                pageContext.router.navigateTo(Res.Routes.postSuccess(message = "Post Successfully Updated!"))
             }
         }
 }

@@ -57,9 +57,9 @@ fun NavigationItems() {
         modifier = Modifier.margin(bottom = 24.px),
         title = "Create Post",
         icon = Res.PathIcon.create,
-        selected = context.route.path.endsWith(Res.Routes.createPost)
+        selected = context.route.path.endsWith(Res.Routes.createPost())
     ) {
-        context.router.navigateTo(Res.Routes.createPost)
+        context.router.navigateTo(Res.Routes.createPost())
     }
     NavigationItem(
         modifier = Modifier.margin(bottom = 24.px),

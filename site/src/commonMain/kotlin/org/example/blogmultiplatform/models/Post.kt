@@ -17,17 +17,36 @@ expect class Post {
 }
 
 @Serializable
-class CreatePosRequest(
-    val date: Long,
-    val title: String,
-    val subtitle: String,
-    val thumbnail: String,
-    val content: String,
-    val category: String,
-    val popular: Boolean,
-    val main: Boolean,
-    val sponsored: Boolean
+open class CreatePostRequest(
+    open val date: Long,
+    open val title: String,
+    open val subtitle: String,
+    open val thumbnail: String,
+    open val content: String,
+    open val category: String,
+    open val popular: Boolean,
+    open val main: Boolean,
+    open val sponsored: Boolean
 )
+
+@Serializable
+expect class UpdatePostRequest {
+    @SerialName("_id")
+    val id: String
+    val date: Long
+    val title: String
+    val subtitle: String
+    val thumbnail: String
+    val content: String
+    val category: String
+    val popular: Boolean
+    val main: Boolean
+    val sponsored: Boolean
+
+    companion object{
+        fun from(request: CreatePostRequest,postId:String): UpdatePostRequest
+    }
+}
 
 @Serializable
 expect class PostLight {

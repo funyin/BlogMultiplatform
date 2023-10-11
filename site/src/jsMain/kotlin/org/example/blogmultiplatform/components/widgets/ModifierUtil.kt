@@ -30,9 +30,9 @@ fun ResponsiveValues<Int>.itemSpace(
     val rowCount = itemCount / columnCount
     val rowIndex = index / columnCount
 
-    val gapValue = horizontalGap.value
-    val lastInRow = (index + 1) % columnCount == 0
-    val firstInRow = index % columnCount == 0
+//    val gapValue = horizontalGap.value
+//    val lastInRow = (index + 1) % columnCount == 0
+//    val firstInRow = index % columnCount == 0
     return Modifier
         .margin(
             right = if ((index + 1) % columnCount != 0) horizontalGap else 0.px,

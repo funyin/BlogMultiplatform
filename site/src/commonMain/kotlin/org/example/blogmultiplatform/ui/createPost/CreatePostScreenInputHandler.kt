@@ -4,16 +4,15 @@ import com.copperleaf.ballast.InputHandler
 import com.copperleaf.ballast.InputHandlerScope
 import com.copperleaf.ballast.postInput
 import kotlinx.datetime.Clock
-import org.example.blogmultiplatform.api.PostApi
-import org.example.blogmultiplatform.models.CreatePosRequest
-import org.example.blogmultiplatform.models.EditorKey
-import org.example.blogmultiplatform.models.UiState
-import org.example.blogmultiplatform.models.controlStyle
+import org.example.blogmultiplatform.data.api.PostApi
+import org.example.blogmultiplatform.data.repository.PostRepository
+import org.example.blogmultiplatform.models.*
 import org.example.blogmultiplatform.ui.createPost.CreatePostContract.Events
 import org.example.blogmultiplatform.ui.createPost.CreatePostContract.Inputs
 import org.example.blogmultiplatform.ui.createPost.CreatePostContract.State
 
 class CreatePostScreenInputHandler(private val postApi: PostApi) : InputHandler<Inputs, Events, State> {
+    private val repository = PostRepository(postApi.apiClient)
     override suspend fun InputHandlerScope<Inputs, Events, State>.handleInput(
         input: Inputs
     ) {
@@ -112,23 +111,9 @@ class CreatePostScreenInputHandler(private val postApi: PostApi) : InputHandler<
 
             is Inputs.CreatePost -> {
                 val uiState = getCurrentState()
-                with(uiState) {
-                    if (title.isEmpty() || subtitle.isEmpty() || content.isEmpty() || imageUrl.isEmpty() || category == null) {
-                        postInput(Inputs.ShowErrorMessage(message = "Fill all required fields"))
-                        return@handleInput
-                    }
-                }
-                val request = CreatePosRequest(
-                    date = Clock.System.now().toEpochMilliseconds(),
-                    title = uiState.title,
-                    subtitle = uiState.subtitle,
-                    content = uiState.content,
-                    thumbnail = uiState.imageUrl,
-                    popular = uiState.popular,
-                    category = uiState.category?.name.toString(),
-                    main = uiState.main,
-                    sponsored = uiState.sponsored
-                )
+                if (!sanityCheck(uiState))
+                    return
+                val request = buildRequest(uiState)
                 updateState {
                     it.copy(createPostState = UiState.Loading)
                 }
@@ -145,20 +130,21 @@ class CreatePostScreenInputHandler(private val postApi: PostApi) : InputHandler<
 
             is Inputs.CreatePostResponse -> {
                 updateState {
-                    if (input.createPostState.isSuccess) State.initial.copy(createPostState = input.createPostState)
-                    else it.copy(createPostState = input.createPostState)
+                    if (input.state.isSuccess) State.initial.copy(createPostState = input.state)
+                    else it.copy(createPostState = input.state)
                 }
             }
 
             is Inputs.ClosePopup -> {
                 updateState {
-                    it.copy(createPostState = UiState.Initial)
+                    it.copy(createPostState = UiState.Initial, updatePostState = UiState.Initial)
                 }
             }
 
             is Inputs.ShowErrorMessage -> {
+                val errorStat = UiState.Error<Boolean>(errorMessage = input.message)
                 updateState {
-                    it.copy(createPostState = UiState.Error(errorMessage = input.message))
+                    it.copy(createPostState = errorStat, updatePostState = errorStat)
                 }
             }
 
@@ -177,6 +163,89 @@ class CreatePostScreenInputHandler(private val postApi: PostApi) : InputHandler<
             Inputs.CloseImagePopup -> {
                 updateState { it.copy(showImagePopup = null) }
             }
+
+            Inputs.GetPost -> {
+                updateState { it.copy(getPostState = UiState.Loading) }
+                val postId = getCurrentState().postId!!
+                sideJob("getPost") {
+                    try {
+                        val response = repository.post(postId)
+                        postInput(Inputs.GetPostResponse(response))
+                    } catch (e: Exception) {
+                        postInput(Inputs.GetPostResponse(UiState.Error(e.message.toString())))
+                    }
+                }
+            }
+
+            is Inputs.GetPostResponse -> {
+                val postState = input.state
+                updateState { it.copy(getPostState = postState) }
+                if (postState is UiState.Success) {
+                    val post = postState.data
+                    updateState {
+                        it.copy(
+                            title = post.title,
+                            subtitle = post.subtitle,
+                            content = post.content,
+                            category = Category.valueOf(post.category),
+                            postId = post.id,
+                            popular = post.popular,
+                            sponsored = post.sponsored,
+                            imageUrl = post.thumbnail,
+                            main = post.main,
+                        )
+                    }
+                }
+            }
+
+            Inputs.UpdatePost -> {
+                val uiState = getCurrentState()
+                if (!sanityCheck(uiState))
+                    return
+                val request = buildRequest(uiState).run {
+                    UpdatePostRequest.from(this, postId = uiState.postId!!)
+                }
+                updateState { it.copy(updatePostState = UiState.Loading) }
+                sideJob("updatePost") {
+                    try {
+                        val response = repository.updatePost(request)
+                        postInput(Inputs.UpdatePostResponse(response))
+                    } catch (e: Exception) {
+                        postInput(Inputs.UpdatePostResponse(UiState.Error(e.message.toString())))
+                    }
+                }
+            }
+
+            is Inputs.UpdatePostResponse -> {
+                updateState { it.copy(updatePostState = input.state) }
+                if (input.state.isSuccess)
+                    postEvent(Events.PostUpdated)
+            }
+        }
+    }
+
+    private fun buildRequest(uiState: State) =
+        CreatePostRequest(
+            date = Clock.System.now().toEpochMilliseconds(),
+            title = uiState.title,
+            subtitle = uiState.subtitle,
+            content = uiState.content,
+            thumbnail = uiState.imageUrl,
+            popular = uiState.popular,
+            category = uiState.category?.name.toString(),
+            main = uiState.main,
+            sponsored = uiState.sponsored
+        )
+
+    private suspend fun InputHandlerScope<Inputs, Events, State>.sanityCheck(
+        uiState: State
+    ): Boolean {
+        with(uiState) {
+            if (title.isEmpty() || subtitle.isEmpty() || content.isEmpty() || imageUrl.isEmpty() || category == null) {
+                postInput(Inputs.ShowErrorMessage(message = "Fill all required fields"))
+                return false
+            }
+            return true
         }
     }
 }
