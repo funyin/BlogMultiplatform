@@ -23,9 +23,12 @@ fun MenuPanel(modifier: Modifier = Modifier) {
             }
             if (overflowMenuOpened)
                 OverflowSidePanel(
-                    modifier = Modifier.pointerEvents(PointerEvents.Auto).align(Alignment.CenterStart)
+                    modifier = Modifier.pointerEvents(PointerEvents.Auto).align(Alignment.CenterStart),
+                    onMenuClose = {
+                        overflowMenuOpened = false
+                    }
                 ) {
-                    overflowMenuOpened = false
+                    NavigationItems()
                 }
         }
     }

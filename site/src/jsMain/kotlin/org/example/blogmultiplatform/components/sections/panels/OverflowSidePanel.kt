@@ -7,6 +7,7 @@ import com.varabyte.kobweb.compose.css.Overflow
 import com.varabyte.kobweb.compose.css.ScrollBehavior
 import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Column
+import com.varabyte.kobweb.compose.foundation.layout.ColumnScope
 import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
@@ -29,7 +30,11 @@ import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.css.vh
 
 @Composable
-fun OverflowSidePanel(modifier: Modifier = Modifier, onMenuClose: () -> Unit) {
+fun OverflowSidePanel(
+    modifier: Modifier = Modifier,
+    onMenuClose: () -> Unit,
+    content: @Composable ColumnScope.() -> Unit
+) {
     val breakPoint = rememberBreakpoint()
     var translateX by remember { mutableStateOf((-100).percent) }
     var opactiy by remember { mutableStateOf(0.percent) }
@@ -79,7 +84,7 @@ fun OverflowSidePanel(modifier: Modifier = Modifier, onMenuClose: () -> Unit) {
                 Image(Res.Images.logo, desc = "Logo", modifier = Modifier.width(80.px))
             }
             Column(modifier = Modifier.padding(all = 24.px)) {
-                NavigationItems()
+                content()
             }
         }
     }

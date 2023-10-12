@@ -1,7 +1,9 @@
 package org.example.blogmultiplatform.data
 
 import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Sorts
 import com.mongodb.client.model.Sorts.descending
+import com.mongodb.client.model.Updates
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
 import org.example.blogmultiplatform.models.Post
@@ -16,7 +18,19 @@ object PostsController {
     suspend fun ApiController.updatePost(post: UpdatePostRequest): Boolean {
         return postsCollection
             .withDocumentClass<UpdatePostRequest>()
-            .replaceOne(Filters.eq("_id", post.id), post).wasAcknowledged()
+            .updateOne(
+                Filters.eq("_id", post.id), listOf(
+                    Updates.set(UpdatePostRequest::date.name, post.date),
+                    Updates.set(UpdatePostRequest::title.name, post.title),
+                    Updates.set(UpdatePostRequest::subtitle.name, post.subtitle),
+                    Updates.set(UpdatePostRequest::thumbnail.name, post.thumbnail),
+                    Updates.set(UpdatePostRequest::content.name, post.content),
+                    Updates.set(UpdatePostRequest::category.name, post.category),
+                    Updates.set(UpdatePostRequest::popular.name, post.popular),
+                    Updates.set(UpdatePostRequest::main.name, post.main),
+                    Updates.set(UpdatePostRequest::sponsored.name, post.sponsored)
+                )
+            ).wasAcknowledged()
     }
 
     suspend fun ApiController.get(postId: String): Post? {
@@ -43,5 +57,14 @@ object PostsController {
         return postsCollection
             .deleteMany(Filters.`in`("_id", items))
             .wasAcknowledged()
+    }
+
+    suspend fun ApiController.mainPosts(): List<PostLight> {
+        return postsCollection
+            .withDocumentClass<PostLight>()
+            .find(Filters.eq(Post::main.name, true))
+            .sort(Sorts.descending(PostLight::date.name))
+            .limit(4)
+            .toList()
     }
 }

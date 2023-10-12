@@ -45,11 +45,12 @@ fun SidePanel(modifier: Modifier) {
 @Composable
 fun NavigationItems() {
     val context = rememberPageContext()
+    val path = context.route.path
     NavigationItem(
         modifier = Modifier.margin(bottom = 24.px),
         title = "Home",
         icon = Res.PathIcon.home,
-        selected = context.route.path.endsWith(Res.Routes.adminHome)
+        selected = path.endsWith(Res.Routes.adminHome)
     ) {
         context.router.navigateTo(Res.Routes.adminHome)
     }
@@ -57,7 +58,7 @@ fun NavigationItems() {
         modifier = Modifier.margin(bottom = 24.px),
         title = "Create Post",
         icon = Res.PathIcon.create,
-        selected = context.route.path.endsWith(Res.Routes.createPost())
+        selected = path.contains(Res.Routes.createPost())
     ) {
         context.router.navigateTo(Res.Routes.createPost())
     }
@@ -65,7 +66,7 @@ fun NavigationItems() {
         modifier = Modifier.margin(bottom = 24.px),
         title = "My Posts",
         icon = Res.PathIcon.posts,
-        selected = context.route.path.endsWith(Res.Routes.posts)
+        selected = path.endsWith(Res.Routes.posts)
     ) {
         context.router.navigateTo(Res.Routes.posts)
     }

@@ -53,4 +53,14 @@ class PostRepository(private val client: ApiClient) {
             UiState.Error(errorMessage = e.message!!.toString())
         }
     }
+
+    suspend fun mainPosts(): UiState<List<PostLight>> {
+        return try {
+            val response =
+                client.get<ApiResponse<List<PostLight>>>("${CommonRes.Strings.apiBaseUrl}posts/main")
+            UiState.Success(response.data)
+        } catch (e: Exception) {
+            UiState.Error(errorMessage = e.message!!.toString())
+        }
+    }
 }

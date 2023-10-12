@@ -15,6 +15,7 @@ import com.varabyte.kobweb.core.rememberPageContext
 import com.varabyte.kobweb.silk.components.forms.Checkbox
 import com.varabyte.kobweb.silk.components.forms.CheckboxSize
 import com.varabyte.kobweb.silk.components.forms.SwitchSize
+import com.varabyte.kobweb.silk.components.graphics.Image
 import com.varabyte.kobweb.silk.components.layout.SimpleGrid
 import com.varabyte.kobweb.silk.components.layout.numColumns
 import com.varabyte.kobweb.silk.components.text.SpanText
@@ -105,16 +106,19 @@ fun PostsPage() {
                     else
                         SimpleGrid(
                             numColumns = numColumns,
-                            modifier = Modifier.fillMaxWidth().margin(top = 24.px).width(100.percent)
+                            modifier = Modifier.fillMaxWidth().margin(top = 24.px)
+                                .width(100.percent)
+                                .columnGap(20.px)
+                                .rowGap(20.px)
                         ) {
                             postsState.data.forEachIndexed { index, postLight ->
                                 PostPreview(
-                                    modifier = numColumns.itemSpace(
-                                        index = index,
-                                        itemCount = postsState.data.size,
-                                        horizontalGap = 20.px,
-                                        verticalGap = 20.px
-                                    ),
+//                                    modifier = numColumns.itemSpace(
+//                                        index = index,
+//                                        itemCount = postsState.data.size,
+//                                        horizontalGap = 20.px,
+//                                        verticalGap = 20.px
+//                                    ),
                                     postLight = postLight,
                                     selectable = uiState.selectMode,
                                     checked = uiState.selectedPosts.any { it == postLight.id },
@@ -180,7 +184,7 @@ private fun ShowMoreButton(uiState: UiState<Any>, onClick: () -> Unit = {}) {
 
 @Composable
 private fun PostPreview(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     postLight: PostLight,
     selectable: Boolean,
     checked: Boolean,
@@ -213,7 +217,14 @@ private fun PostPreview(
         Box(
             modifier = Modifier.fillMaxWidth().height(320.px)
                 .background(AppColors.LightGrey.rgb)
-        )
+        ) {
+            Image(
+                src = postLight.thumbnail,
+                desc = "thumbnail",
+                modifier = Modifier.fillMaxSize()
+                    .objectFit(ObjectFit.Cover),
+            )
+        }
         Column(modifier = modifier.fillMaxWidth().margin(top = 16.px), horizontalAlignment = Alignment.Start) {
             SpanText(
                 text = Instant.fromEpochMilliseconds(postLight.date).toJSDate()
