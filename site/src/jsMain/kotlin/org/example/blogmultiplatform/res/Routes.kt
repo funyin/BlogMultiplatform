@@ -18,3 +18,8 @@ val Res.Routes.Companion.posts: String
 
 fun Res.Routes.Companion.postSuccess(message: String? = null): String =
     "${posts}success${message?.let { "?message=${it.encodeURLParameter()}" } ?: ""}"
+
+val Res.Routes.Companion.clientPosts: String
+    get() = "/posts"
+
+fun Res.Routes.Companion.post(postId: String): String = "$clientPosts/$postId"

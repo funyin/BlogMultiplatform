@@ -5,7 +5,6 @@ import com.varabyte.kobweb.compose.css.*
 import com.varabyte.kobweb.compose.file.loadDataUrlFromDisk
 import com.varabyte.kobweb.compose.foundation.layout.*
 import com.varabyte.kobweb.compose.ui.*
-import com.varabyte.kobweb.compose.ui.graphics.Color
 import com.varabyte.kobweb.compose.ui.graphics.Colors
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.core.Page
@@ -42,16 +41,6 @@ import org.w3c.dom.HTMLTextAreaElement
 
 private val Res.Id.Companion.postContent: String
     get() = "content"
-val postContentStyle by ComponentStyle {
-    base {
-        Modifier
-    }
-    cssRule(" pre") {
-        Modifier.background(Color.rgb(0x0d1117))
-            .padding(8.px)
-            .borderRadius(4.px)
-    }
-}
 
 @Page("createpost/{postId}")
 @Composable
@@ -284,7 +273,7 @@ private fun CreatePostForm(viewModel: CreatePostViewModel) {
             attrs = Modifier.id(Res.Id.previewId).fillMaxSize().padding(leftRight = 20.px, topBottom = 16.px)
                 .visibility(if (uiState.showPreview) Visibility.Visible else Visibility.Hidden)
                 .overflow(Overflow.Auto).scrollBehavior(ScrollBehavior.Smooth)
-                .then(postContentStyle.toModifier())
+                .then(MarkdownContentStyle.toModifier())
                 .toAttrs()
         ) {
         }

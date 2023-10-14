@@ -11,6 +11,7 @@ import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.compose.ui.styleModifier
 import com.varabyte.kobweb.compose.ui.thenIf
+import com.varabyte.kobweb.core.rememberPageContext
 import com.varabyte.kobweb.silk.components.layout.SimpleGrid
 import com.varabyte.kobweb.silk.components.layout.numColumns
 import com.varabyte.kobweb.silk.components.style.breakpoint.Breakpoint
@@ -21,6 +22,7 @@ import org.example.blogmultiplatform.models.UiState
 import org.example.blogmultiplatform.modules.home.HomePageViewModel
 import org.example.blogmultiplatform.res.MAX_WIDTH
 import org.example.blogmultiplatform.res.Res
+import org.example.blogmultiplatform.res.post
 import org.example.blogmultiplatform.ui.home.HomePageContract
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
@@ -38,6 +40,7 @@ val PostPreviewHomeSecondaryVariant = PostPreviewDarkVariant
 @Composable
 fun HomeHeroSection(viewModel: HomePageViewModel) {
     val breakpoint = rememberBreakpoint()
+    val context = rememberPageContext()
     val uiState by viewModel.observeStates().collectAsState()
     val getPosts = {
         viewModel.trySend(HomePageContract.Inputs.GetMainPosts)
@@ -83,7 +86,9 @@ fun HomeHeroSection(viewModel: HomePageViewModel) {
                                 }),
                             postLight = mainPostsState.data.first(),
                             variant = PostPreviewHomePrimaryVariant
-                        )
+                        ){
+                            context.router.navigateTo(Res.Routes.post(mainPostsState.data.first().id))
+                        }
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -95,7 +100,9 @@ fun HomeHeroSection(viewModel: HomePageViewModel) {
                                 PostPreview(
                                     postLight = it,
                                     variant = PostPreviewHomeSecondaryVariant
-                                )
+                                ){
+                                    context.router.navigateTo(Res.Routes.post(it.id))
+                                }
                             }
                         }
                     }

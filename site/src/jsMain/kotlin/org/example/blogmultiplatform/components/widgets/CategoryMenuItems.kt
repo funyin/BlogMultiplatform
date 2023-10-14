@@ -17,6 +17,7 @@ import com.varabyte.kobweb.silk.components.style.toModifier
 import org.example.blogmultiplatform.core.AppColors
 import org.example.blogmultiplatform.models.Category
 import org.example.blogmultiplatform.res.Res
+import org.example.blogmultiplatform.res.clientPosts
 import org.jetbrains.compose.web.css.ms
 import org.jetbrains.compose.web.css.px
 
@@ -26,20 +27,17 @@ fun CategoryMenuItems(horizontal: Boolean) {
     val context = rememberPageContext()
     categories.forEachIndexed { index, it ->
         MenuItem(
-            category = it,
-            modifier = Modifier.margin(
+            category = it, modifier = Modifier.margin(
                 right = if (horizontal && index != categories.lastIndex) 24.px else 0.px,
                 bottom = if (!horizontal && index != categories.lastIndex) 24.px else 0.px
-            ),
-            selected = context.route.queryParams["category"] == it.name
+            ), selected = context.route.queryParams["category"] == it.name
         )
     }
 }
 
 val MenuItemStyle by ComponentStyle {
     base {
-        Modifier.color(Colors.White)
-            .transition(CSSTransition(TransitionProperty.of("color"), duration = 300.ms))
+        Modifier.color(Colors.White).transition(CSSTransition(TransitionProperty.of("color"), duration = 300.ms))
     }
     anyLink {
         Modifier.color(Colors.White)
@@ -56,7 +54,7 @@ private fun MenuItem(modifier: Modifier = Modifier, category: Category, selected
             .textDecorationLine(
                 TextDecorationLine.None
             ).thenIf(selected, Modifier.color(AppColors.Primary.rgb)),
-        path = "search?category=${category.name}",
+        path = Res.Routes.clientPosts + "?category=${category.name}",
         text = category.name,
     )
 }

@@ -1,4 +1,4 @@
-package org.example.blogmultiplatform.pages.search
+package org.example.blogmultiplatform.pages.posts
 
 import androidx.compose.runtime.*
 import com.varabyte.kobweb.compose.foundation.layout.Column
@@ -23,13 +23,14 @@ import org.example.blogmultiplatform.pages.admin.posts.ShowMoreButton
 import org.example.blogmultiplatform.res.MAX_WIDTH
 import org.example.blogmultiplatform.res.PAGE_WIDTH
 import org.example.blogmultiplatform.res.Res
+import org.example.blogmultiplatform.res.post
 import org.example.blogmultiplatform.ui.search.SearchPostsContract
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
 
-@Page("/search")
+@Page("/posts")
 @Composable
-fun SearchPage() {
+fun ClientPostsPage() {
     val context = rememberPageContext()
     val category = context.route.params["category"]
     val scope = rememberCoroutineScope()
@@ -80,7 +81,9 @@ fun SearchPage() {
                             modifier = Modifier.gap(50.px).fillMaxWidth()
                         ) {
                             resultsState.data.forEach {
-                                PostPreview(postLight = it)
+                                PostPreview(postLight = it){
+                                    context.router.navigateTo(Res.Routes.post(it.id))
+                                }
                             }
                         }
                         ShowMoreButton(uiState.showMoreState) {

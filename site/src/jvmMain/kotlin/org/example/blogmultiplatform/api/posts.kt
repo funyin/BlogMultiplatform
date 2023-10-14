@@ -6,6 +6,8 @@ import com.varabyte.kobweb.api.data.getValue
 import com.varabyte.kobweb.api.http.setBodyText
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.example.blogmultiplatform.core.errorBody
+import org.example.blogmultiplatform.core.successBody
 import org.example.blogmultiplatform.data.ApiController
 import org.example.blogmultiplatform.data.PostsController.get
 import org.example.blogmultiplatform.data.PostsController.getPosts
@@ -31,9 +33,8 @@ suspend fun post(context: ApiContext) {
     try {
         val postId = context.req.params["postId"] ?: throw Exception("postId is required")
         val response: Post = context.data.getValue<ApiController>().get(postId) ?: throw Exception("Post not found")
-        context.res.setBodyText(Json.encodeToString(ApiResponse(message = "Success", data = response)))
-        context.res.contentType = "application/json"
+        context.res.successBody(ApiResponse(message = "Success", data = response))
     } catch (e: Exception) {
-        context.res.setBodyText(Json.encodeToString(ApiResponse(message = "Error", data = e.message.toString())))
+        context.res.errorBody(ApiResponse(message = e.message.toString(), data = e.message.toString()))
     }
 }
