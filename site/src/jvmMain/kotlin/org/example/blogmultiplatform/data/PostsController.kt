@@ -5,9 +5,11 @@ import com.mongodb.client.model.Sorts.descending
 import com.mongodb.client.model.Updates
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
+import org.bson.conversions.Bson
 import org.example.blogmultiplatform.models.Post
 import org.example.blogmultiplatform.models.PostLight
 import org.example.blogmultiplatform.models.UpdatePostRequest
+import java.util.regex.Pattern
 
 object PostsController {
     suspend fun ApiController.addPost(post: Post): Boolean {
@@ -88,7 +90,6 @@ object PostsController {
                     )
                 )
             )
-            .sort(descending(PostLight::date.name))
             .sort(sort = descending(PostLight::date.name))
             .skip((page - 1) * size).limit(size)
             .toList()
@@ -99,7 +100,29 @@ object PostsController {
             .withDocumentClass<PostLight>()
             .find(Filters.eq(Post::popular.name, true))
             .sort(descending(PostLight::date.name))
-            .sort(sort = descending(PostLight::date.name))
+            .skip((page - 1) * size).limit(size)
+            .toList()
+    }
+
+    suspend fun ApiController.search(title: String?, category: String?, page: Int, size: Int): List<PostLight> {
+        return postsCollection
+            .withDocumentClass<PostLight>()
+            .find(
+                Filters.and(
+                    mutableListOf<Bson?>().run {
+                        category?.let {
+                            this += Filters.eq(Post::category.name, category)
+                        }
+                        title?.let {
+                            this += Filters.regex(Post::title.name, title.trim().toPattern(Pattern.CASE_INSENSITIVE))
+                        }
+                        this
+                    }.ifEmpty {
+                        listOf(Filters.empty())
+                    }
+                )
+            )
+            .sort(descending(PostLight::date.name))
             .skip((page - 1) * size).limit(size)
             .toList()
     }

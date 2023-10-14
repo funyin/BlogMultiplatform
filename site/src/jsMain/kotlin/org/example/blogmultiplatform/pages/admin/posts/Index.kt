@@ -9,13 +9,11 @@ import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.compose.ui.thenIf
-import com.varabyte.kobweb.compose.ui.toAttrs
 import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.core.rememberPageContext
 import com.varabyte.kobweb.silk.components.forms.SwitchSize
 import com.varabyte.kobweb.silk.components.layout.SimpleGrid
 import com.varabyte.kobweb.silk.components.layout.numColumns
-import com.varabyte.kobweb.silk.components.text.SpanText
 import org.example.blogmultiplatform.components.layouts.AdminPageLayout
 import org.example.blogmultiplatform.components.widgets.*
 import org.example.blogmultiplatform.core.AppColors
@@ -27,7 +25,6 @@ import org.example.blogmultiplatform.res.createPost
 import org.jetbrains.compose.web.css.ms
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
-import org.jetbrains.compose.web.dom.Progress
 
 @Page
 @Composable
@@ -149,22 +146,3 @@ fun PostsPage() {
         }
 }
 
-@Composable
-private fun ShowMoreButton(uiState: UiState<Any>, onClick: () -> Unit = {}) {
-    val modifier = Modifier.margin(topBottom = 50.px)
-    if (uiState.isLoading)
-        Progress(
-            attrs = Modifier.width(200.px)
-                .then(modifier)
-                .toAttrs()
-        )
-    else
-        SpanText("Show More", modifier = Modifier.fontSize(16.px).then(modifier)
-            .cursor(Cursor.Pointer)
-            .fontWeight(FontWeight.Bold)
-            .onClick {
-                onClick()
-            }
-            .thenIf(uiState.isInitial, Modifier.visibility(Visibility.Hidden))
-        )
-}

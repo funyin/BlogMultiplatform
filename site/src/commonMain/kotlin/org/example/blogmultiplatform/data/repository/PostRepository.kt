@@ -99,4 +99,28 @@ class PostRepository(private val client: ApiClient) {
             UiState.Error(errorMessage = e.message!!.toString())
         }
     }
+
+    suspend fun search(title: String?, category: Category?, page: Int, size: Int): UiState<List<PostLight>> {
+        return try {
+            val response =
+                client.get<ApiResponse<List<PostLight>>>(
+                    "${CommonRes.Strings.apiBaseUrl}posts/search",
+                    parameters = mutableMapOf<String, Any>(
+                        "page" to page,
+                        "size" to size,
+                    ).run {
+                        category?.name?.let {
+                            this += "category" to it
+                        }
+                        title?.let {
+                            this += "title" to title
+                        }
+                        this
+                    }
+                )
+            UiState.Success(response.data)
+        } catch (e: Exception) {
+            UiState.Error(errorMessage = e.message!!.toString())
+        }
+    }
 }

@@ -18,16 +18,16 @@ import org.jetbrains.compose.web.css.*
 
 @Composable
 fun Toast(message: String, show: Boolean, close: () -> Unit) {
-    var translateX by remember { mutableStateOf((100).percent) }
+    var translateY by remember { mutableStateOf((100).percent) }
     var opacity by remember { mutableStateOf(0.percent) }
     LaunchedEffect(show) {
         if (show) {
-            translateX = 0.percent
+            translateY = 0.percent
             opacity = 100.percent
             delay(2000)
             close()
         } else {
-            translateX = (100).percent
+            translateY = (100).percent
             opacity = 0.percent
         }
     }
@@ -36,6 +36,7 @@ fun Toast(message: String, show: Boolean, close: () -> Unit) {
             .maxWidth(100.vw)
             .maxHeight(100.vh)
             .position(Position.Fixed)
+            .top(0.px)
             .pointerEvents(PointerEvents.None)
             .thenIf(show, Modifier.pointerEvents(PointerEvents.Initial).onClick {
                 close()
@@ -48,7 +49,7 @@ fun Toast(message: String, show: Boolean, close: () -> Unit) {
                 .padding(16.px)
                 .margin(bottom = 50.px)
                 .pointerEvents(PointerEvents.Auto)
-                .translateY(translateX)
+                .translateY(translateY)
                 .opacity(opacity)
                 .transition(
                     CSSTransition(TransitionProperty.of("translate"), duration = 300.ms),

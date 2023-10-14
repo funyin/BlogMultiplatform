@@ -13,6 +13,7 @@ import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.graphics.Colors
 import com.varabyte.kobweb.compose.ui.modifiers.*
+import com.varabyte.kobweb.core.rememberPageContext
 import com.varabyte.kobweb.silk.components.graphics.Image
 import com.varabyte.kobweb.silk.components.icons.fa.FaXmark
 import com.varabyte.kobweb.silk.components.icons.fa.IconSize
@@ -39,6 +40,7 @@ fun OverflowSidePanel(
     var translateX by remember { mutableStateOf((-100).percent) }
     var opactiy by remember { mutableStateOf(0.percent) }
     val coroutineScope = rememberCoroutineScope()
+    val pageContext = rememberPageContext()
     LaunchedEffect(breakPoint) {
         translateX = 0.percent
         opactiy = 100.percent
@@ -82,7 +84,10 @@ fun OverflowSidePanel(
                 FaXmark(size = IconSize.XL,
                     modifier = Modifier.margin(right = 20.px).cursor(Cursor.Pointer).color(Colors.White)
                         .onClick { closeMenu() })
-                Image(Res.Images.logo, desc = "Logo", modifier = Modifier.width(80.px))
+                Image(Res.Images.logo, desc = "Logo", modifier = Modifier.width(80.px)
+                    .onClick {
+                        pageContext.router.navigateTo("/")
+                    })
             }
             Column(modifier = Modifier.padding(all = 24.px)) {
                 content()

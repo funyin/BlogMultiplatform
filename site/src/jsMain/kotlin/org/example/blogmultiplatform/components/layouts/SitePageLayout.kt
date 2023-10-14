@@ -9,26 +9,42 @@ import com.varabyte.kobweb.compose.foundation.layout.ColumnScope
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.modifiers.fillMaxSize
-import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth
 import com.varabyte.kobweb.compose.ui.modifiers.pointerEvents
+import com.varabyte.kobweb.core.rememberPageContext
 import com.varabyte.kobweb.silk.theme.breakpoint.rememberBreakpoint
 import org.example.blogmultiplatform.components.sections.FooterSection
 import org.example.blogmultiplatform.components.sections.HeaderSection
+import org.example.blogmultiplatform.components.sections.HeaderState
 import org.example.blogmultiplatform.components.sections.panels.OverflowSidePanel
 import org.example.blogmultiplatform.components.widgets.CategoryMenuItems
 
 @Composable
-fun SitePageLayout(content: @Composable ColumnScope.() -> Unit) {
+fun SitePageLayout(content: @Composable ColumnScope.(String) -> Unit) {
     val breakpoint = rememberBreakpoint()
+    val pageContext = rememberPageContext()
+    val search = pageContext.route.params["search"] ?: ""
     var showSidePanel by remember { mutableStateOf(false) }
+    var headerState by remember(search) {
+        mutableStateOf(HeaderState(search = search) {
+            showSidePanel = true
+        })
+    }
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            HeaderSection(breakpoint) { showSidePanel = true }
-            content()
+            HeaderSection(breakpoint, state = headerState) {
+                headerState = it
+            }
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
+            ) {
+                content(headerState.search)
+            }
             FooterSection()
         }
         if (showSidePanel)

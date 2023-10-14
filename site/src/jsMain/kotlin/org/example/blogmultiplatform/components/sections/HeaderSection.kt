@@ -10,6 +10,7 @@ import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.graphics.Colors
 import com.varabyte.kobweb.compose.ui.modifiers.*
+import com.varabyte.kobweb.core.rememberPageContext
 import com.varabyte.kobweb.silk.components.graphics.Image
 import com.varabyte.kobweb.silk.components.icons.fa.FaBars
 import com.varabyte.kobweb.silk.components.icons.fa.FaMagnifyingGlass
@@ -28,7 +29,10 @@ import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
 
 @Composable
-fun HeaderSection(breakpoint: Breakpoint, onMenuClick: () -> Unit) {
+fun HeaderSection(
+    breakpoint: Breakpoint, state: HeaderState,
+    onStateChanged: (HeaderState) -> Unit,
+) {
     Box(modifier = Modifier.fillMaxWidth().background(AppColors.Secondary.rgb), contentAlignment = Alignment.Center) {
         Box(
             modifier = Modifier.fillMaxWidth()
@@ -36,15 +40,20 @@ fun HeaderSection(breakpoint: Breakpoint, onMenuClick: () -> Unit) {
                 .background(AppColors.Secondary.rgb),
             contentAlignment = Alignment.Center
         ) {
-            Header(breakpoint, onMenuClick = onMenuClick)
+            Header(state, onStateChanged, breakpoint)
         }
     }
 }
 
+data class HeaderState(val search: String = "", val onMenuClick: () -> Unit)
+
 @Composable
-fun Header(breakpoint: Breakpoint, onMenuClick: () -> Unit) {
+fun Header(
+    state: HeaderState,
+    onStateChanged: (HeaderState) -> Unit,
+    breakpoint: Breakpoint,
+) {
     var showSearchOverlay by remember { mutableStateOf(false) }
-    var searchValue by remember { mutableStateOf("") }
     val showFullSearch = breakpoint > Breakpoint.SM
     LaunchedEffect(breakpoint) {
         if (showFullSearch) {
@@ -52,10 +61,11 @@ fun Header(breakpoint: Breakpoint, onMenuClick: () -> Unit) {
         }
     }
     val searchInput: @Composable () -> Unit = {
-        SearchInput(value = searchValue, variant = SearchInputDarkVariant) {
-            searchValue = it
+        SearchInput(value = state.search, variant = SearchInputDarkVariant) {
+            onStateChanged(state.copy(search = it))
         }
     }
+    val pageContext = rememberPageContext()
     Row(
         modifier = Modifier.fillMaxWidth()
             .fillMaxWidth(if (breakpoint > Breakpoint.MD) 80.percent else 90.percent)
@@ -68,15 +78,16 @@ fun Header(breakpoint: Breakpoint, onMenuClick: () -> Unit) {
                 FaBars(size = IconSize.XL, modifier = Modifier.margin(right = 24.px).color(Colors.White)
                     .cursor(Cursor.Pointer)
                     .onClick {
-                        onMenuClick()
+                        state.onMenuClick()
                     }
                 )
-            Image(src = Res.Images.logo, desc = "logo", modifier = Modifier.margin(right = 50.px)
-                .width(if (breakpoint >= Breakpoint.SM) 100.px else 70.px)
-                .cursor(Cursor.Pointer)
-                .onClick {
-
-                }
+            Image(
+                src = Res.Images.logo, desc = "logo", modifier = Modifier.margin(right = 50.px)
+                    .width(if (breakpoint >= Breakpoint.SM) 100.px else 70.px)
+                    .cursor(Cursor.Pointer)
+                    .onClick {
+                        pageContext.router.navigateTo("/")
+                    }
             )
             if (breakpoint >= Breakpoint.LG) {
                 CategoryMenuItems(horizontal = true)
