@@ -44,10 +44,16 @@ fun HeaderSection(breakpoint: Breakpoint, onMenuClick: () -> Unit) {
 @Composable
 fun Header(breakpoint: Breakpoint, onMenuClick: () -> Unit) {
     var showSearchOverlay by remember { mutableStateOf(false) }
+    var searchValue by remember { mutableStateOf("") }
     val showFullSearch = breakpoint > Breakpoint.SM
     LaunchedEffect(breakpoint) {
         if (showFullSearch) {
             showSearchOverlay = false
+        }
+    }
+    val searchInput: @Composable () -> Unit = {
+        SearchInput(value = searchValue, variant = SearchInputDarkVariant) {
+            searchValue = it
         }
     }
     Row(
@@ -77,9 +83,7 @@ fun Header(breakpoint: Breakpoint, onMenuClick: () -> Unit) {
             }
             Spacer()
             if (showFullSearch)
-                SearchInput(value = "", variant = SearchInputDarkVariant) {
-
-                }
+                searchInput()
             else
                 FaMagnifyingGlass(size = IconSize.XL, modifier = Modifier.color(AppColors.Primary.rgb)
                     .cursor(Cursor.Pointer)
@@ -93,9 +97,7 @@ fun Header(breakpoint: Breakpoint, onMenuClick: () -> Unit) {
                     showSearchOverlay = false
                 }
             )
-            SearchInput(value = "", variant = SearchInputDarkVariant) {
-
-            }
+            searchInput()
         }
     }
 }

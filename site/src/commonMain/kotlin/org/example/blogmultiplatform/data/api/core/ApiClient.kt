@@ -56,7 +56,7 @@ class ApiClient(private val engine: HttpClientEngine) {
         else
             throw Exception(
                 Json.decodeFromString<Map<String, JsonElement>>(bodyAsText())["message"]
-                    ?.jsonPrimitive?.content
+                    ?.jsonPrimitive?.content ?: bodyAsText()
             )
     }
 }

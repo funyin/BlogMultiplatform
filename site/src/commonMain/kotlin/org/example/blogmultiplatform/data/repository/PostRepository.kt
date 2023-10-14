@@ -63,4 +63,40 @@ class PostRepository(private val client: ApiClient) {
             UiState.Error(errorMessage = e.message!!.toString())
         }
     }
+
+    suspend fun latestPosts(page: Int, size: Int): UiState<List<PostLight>> {
+        return try {
+            val response =
+                client.get<ApiResponse<List<PostLight>>>(
+                    "${CommonRes.Strings.apiBaseUrl}posts/latest",
+                    parameters = mapOf("page" to page, "size" to size)
+                )
+            UiState.Success(response.data)
+        } catch (e: Exception) {
+            UiState.Error(errorMessage = e.message!!.toString())
+        }
+    }
+
+    suspend fun sponsoredPosts(): UiState<List<PostLight>> {
+        return try {
+            val response =
+                client.get<ApiResponse<List<PostLight>>>("${CommonRes.Strings.apiBaseUrl}posts/sponsored")
+            UiState.Success(response.data)
+        } catch (e: Exception) {
+            UiState.Error(errorMessage = e.message!!.toString())
+        }
+    }
+
+    suspend fun popularPosts(page: Int, size: Int): UiState<List<PostLight>> {
+        return try {
+            val response =
+                client.get<ApiResponse<List<PostLight>>>(
+                    "${CommonRes.Strings.apiBaseUrl}posts/popular",
+                    parameters = mapOf("page" to page, "size" to size)
+                )
+            UiState.Success(response.data)
+        } catch (e: Exception) {
+            UiState.Error(errorMessage = e.message!!.toString())
+        }
+    }
 }

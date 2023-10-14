@@ -16,6 +16,8 @@ sealed class UiState<out T> {
         get() = this is Success
     val getData: T
         get() = (this as Success).data
+    val getMessage: String?
+        get() = (this as? Error)?.errorMessage
 
     fun <W> whenOn(error: ((String) -> W)? = null, loading: W? = null, success: ((T) -> W)? = null, default: W) =
         when (this) {

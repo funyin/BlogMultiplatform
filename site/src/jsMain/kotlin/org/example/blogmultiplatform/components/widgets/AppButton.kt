@@ -9,6 +9,10 @@ import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.compose.ui.toAttrs
 import com.varabyte.kobweb.silk.components.icons.fa.FaSpinner
 import com.varabyte.kobweb.silk.components.icons.fa.IconSize
+import com.varabyte.kobweb.silk.components.style.ComponentStyle
+import com.varabyte.kobweb.silk.components.style.ComponentVariant
+import com.varabyte.kobweb.silk.components.style.addVariant
+import com.varabyte.kobweb.silk.components.style.toModifier
 import com.varabyte.kobweb.silk.components.text.SpanText
 import org.example.blogmultiplatform.core.AppColors
 import org.example.blogmultiplatform.res.Res
@@ -16,16 +20,9 @@ import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.Button
 
-@Composable
-fun AppButton(
-    modifier: Modifier = Modifier,
-    text: String,
-    loading: Boolean = false,
-    onClick: () -> Unit = {}
-) {
-    Button(
-        attrs = Modifier
-            .width(350.px)
+val AppButtonStyle by ComponentStyle {
+    base {
+        Modifier.width(350.px)
             .height(54.px)
             .backgroundColor(AppColors.Primary.rgb)
             .color(Colors.White)
@@ -43,6 +40,25 @@ fun AppButton(
             .fontFamily(Res.Strings.FONT_FAMILY)
             .fontSize(14.px)
             .cursor(Cursor.Pointer)
+    }
+}
+
+val AppButtonRoundedVariant by AppButtonStyle.addVariant {
+    base {
+        Modifier.borderRadius(35.px)
+    }
+}
+
+@Composable
+fun AppButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    loading: Boolean = false,
+    variant: ComponentVariant = ComponentVariant.Empty,
+    onClick: () -> Unit = {}
+) {
+    Button(
+        attrs = AppButtonStyle.toModifier(variant)
             .onClick { onClick() }
             .then(modifier)
             .toAttrs()

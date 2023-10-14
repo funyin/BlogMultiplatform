@@ -2,35 +2,28 @@ package org.example.blogmultiplatform.pages.admin.posts
 
 import androidx.compose.runtime.*
 import com.varabyte.kobweb.compose.css.*
-import com.varabyte.kobweb.compose.foundation.layout.*
+import com.varabyte.kobweb.compose.foundation.layout.Column
+import com.varabyte.kobweb.compose.foundation.layout.Row
+import com.varabyte.kobweb.compose.foundation.layout.Spacer
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
-import com.varabyte.kobweb.compose.ui.graphics.Color.Companion.rgb
-import com.varabyte.kobweb.compose.ui.graphics.Colors
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.compose.ui.thenIf
 import com.varabyte.kobweb.compose.ui.toAttrs
 import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.core.rememberPageContext
-import com.varabyte.kobweb.silk.components.forms.Checkbox
-import com.varabyte.kobweb.silk.components.forms.CheckboxSize
 import com.varabyte.kobweb.silk.components.forms.SwitchSize
-import com.varabyte.kobweb.silk.components.graphics.Image
 import com.varabyte.kobweb.silk.components.layout.SimpleGrid
 import com.varabyte.kobweb.silk.components.layout.numColumns
 import com.varabyte.kobweb.silk.components.text.SpanText
-import kotlinx.datetime.Instant
-import kotlinx.datetime.toJSDate
 import org.example.blogmultiplatform.components.layouts.AdminPageLayout
 import org.example.blogmultiplatform.components.widgets.*
 import org.example.blogmultiplatform.core.AppColors
-import org.example.blogmultiplatform.models.PostLight
 import org.example.blogmultiplatform.models.UiState
 import org.example.blogmultiplatform.modules.posts.posts.PostsUIState
 import org.example.blogmultiplatform.modules.posts.posts.PostsViewModel
 import org.example.blogmultiplatform.res.Res
 import org.example.blogmultiplatform.res.createPost
-import org.jetbrains.compose.web.css.LineStyle
 import org.jetbrains.compose.web.css.ms
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
@@ -113,12 +106,6 @@ fun PostsPage() {
                         ) {
                             postsState.data.forEachIndexed { index, postLight ->
                                 PostPreview(
-//                                    modifier = numColumns.itemSpace(
-//                                        index = index,
-//                                        itemCount = postsState.data.size,
-//                                        horizontalGap = 20.px,
-//                                        verticalGap = 20.px
-//                                    ),
                                     postLight = postLight,
                                     selectable = uiState.selectMode,
                                     checked = uiState.selectedPosts.any { it == postLight.id },
@@ -180,90 +167,4 @@ private fun ShowMoreButton(uiState: UiState<Any>, onClick: () -> Unit = {}) {
             }
             .thenIf(uiState.isInitial, Modifier.visibility(Visibility.Hidden))
         )
-}
-
-@Composable
-private fun PostPreview(
-    modifier: Modifier = Modifier,
-    postLight: PostLight,
-    selectable: Boolean,
-    checked: Boolean,
-    onCheckChanged: (Boolean) -> Unit,
-    onClick: () -> Unit
-) {
-    Column(
-        modifier = Modifier.then(modifier)
-            .thenIf(
-                selectable, Modifier.padding(20.px)
-                    .border(
-                        width = 2.px,
-                        color = if (checked) AppColors.Primary.rgb else rgb(0xEDEDED),
-                        style = LineStyle.Solid
-                    )
-                    .borderRadius(4.px)
-            )
-            .cursor(Cursor.Pointer)
-            .transition(
-                CSSTransition(TransitionProperty.of("border"), duration = 300.ms),
-                CSSTransition(TransitionProperty.of("padding"), duration = 500.ms)
-            )
-            .onClick {
-                if (selectable)
-                    onCheckChanged(!checked)
-                else
-                    onClick()
-            }
-    ) {
-        Box(
-            modifier = Modifier.fillMaxWidth().height(320.px)
-                .background(AppColors.LightGrey.rgb)
-        ) {
-            Image(
-                src = postLight.thumbnail,
-                desc = "thumbnail",
-                modifier = Modifier.fillMaxSize()
-                    .objectFit(ObjectFit.Cover),
-            )
-        }
-        Column(modifier = modifier.fillMaxWidth().margin(top = 16.px), horizontalAlignment = Alignment.Start) {
-            SpanText(
-                text = Instant.fromEpochMilliseconds(postLight.date).toJSDate()
-                    .toLocaleDateString(),
-                modifier = Modifier.fontSize(10.px).color(color = rgb(0x7a7a7a))
-            )
-            SpanText(
-                text = postLight.title,
-                modifier = Modifier.color(Colors.Black).fontSize(20.px)
-                    .fontWeight(FontWeight.Bold)
-                    .maxLines(2)
-            )
-            SpanText(
-                text = postLight.subtitle,
-                modifier = Modifier.maxLines(2)
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth().margin(top = 8.px),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                SpanText(
-                    text = postLight.category,
-                    modifier = Modifier.padding(topBottom = 9.px, leftRight = 14.px)
-                        .border(
-                            width = 0.86.px,
-                            style = LineStyle.Solid,
-                            color = rgb(0x7A7A7A)
-                        )
-                        .borderRadius(55.px)
-                        .color(rgb(0x7A7A7A))
-                        .fontSize(12.px)
-                )
-                if (selectable)
-                    Checkbox(
-                        checked = checked,
-                        size = CheckboxSize.LG, onCheckedChange = onCheckChanged
-                    )
-            }
-        }
-    }
 }

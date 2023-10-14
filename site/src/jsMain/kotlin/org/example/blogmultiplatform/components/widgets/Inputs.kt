@@ -6,18 +6,16 @@ import com.varabyte.kobweb.compose.css.CSSTransition
 import com.varabyte.kobweb.compose.css.TransitionProperty
 import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.ui.*
+import com.varabyte.kobweb.compose.ui.graphics.Color
 import com.varabyte.kobweb.compose.ui.graphics.Colors
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.silk.components.forms.Input
+import com.varabyte.kobweb.silk.components.forms.UnstyledInputVariant
 import com.varabyte.kobweb.silk.components.graphics.Image
-import com.varabyte.kobweb.silk.components.style.ComponentStyle
-import com.varabyte.kobweb.silk.components.style.ComponentVariant
-import com.varabyte.kobweb.silk.components.style.addVariant
-import com.varabyte.kobweb.silk.components.style.toModifier
+import com.varabyte.kobweb.silk.components.style.*
 import org.example.blogmultiplatform.core.AppColors
 import org.example.blogmultiplatform.res.Res
 import org.example.blogmultiplatform.res.searchIcon
-import org.example.blogmultiplatform.styles.LoginInputStyle
 import org.jetbrains.compose.web.attributes.InputType
 import org.jetbrains.compose.web.attributes.placeholder
 import org.jetbrains.compose.web.attributes.readOnly
@@ -27,6 +25,45 @@ import org.jetbrains.compose.web.css.ms
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.TextArea
 
+val CustomInputStyle by ComponentStyle {
+    base {
+        Modifier.border(
+            width = 2.px,
+            style = LineStyle.Solid,
+            color = Colors.Transparent
+        )
+            .width(350.px).height(54.px)
+            .padding(leftRight = 20.px, topBottom = 16.px)
+            .outline(width = 0.px, style = LineStyle.None, color = Colors.Transparent)
+            .background(Colors.White)
+            .border(style = LineStyle.None, width = 0.px)
+            .outline(style = LineStyle.None, width = 0.px)
+            .fontSize(14.px)
+            .transition(CSSTransition(property = "border", duration = 300.ms))
+    }
+    focus {
+        Modifier.border(
+            width = 2.px,
+            style = LineStyle.Solid,
+            color = AppColors.Primary.rgb
+        )
+    }
+}
+
+val CustomInputGreyVariant by CustomInputStyle.addVariant {
+    base {
+        Modifier
+            .background(Color.rgb(0xE9E9E9))
+            .borderRadius(35.px)
+    }
+}
+
+val CustomInputRoundedVariant by CustomInputStyle.addVariant {
+    base {
+        Modifier.borderRadius(35.px)
+    }
+}
+
 @Composable
 fun <T : Any> CustomInputField(
     modifier: Modifier = Modifier,
@@ -35,6 +72,7 @@ fun <T : Any> CustomInputField(
     value: T,
     readOnly: Boolean = false,
     name: String? = null,
+    variant: ComponentVariant = ComponentVariant.Empty,
     onTextChanged: (T) -> Unit = {}
 ) {
     Input(type = inputType,
@@ -45,10 +83,9 @@ fun <T : Any> CustomInputField(
         readOnly = readOnly,
         placeholder = placeholder,
         focusBorderColor = AppColors.Primary.rgb,
-        modifier = LoginInputStyle.toModifier().width(350.px).height(54.px)
-            .padding(leftRight = 20.px, topBottom = 16.px).outline(
-                width = 0.px, style = LineStyle.None, color = Colors.Transparent
-            ).border(style = LineStyle.None).background(Colors.White).fontSize(14.px).then(modifier).attrsModifier {
+        variant = UnstyledInputVariant,
+        modifier = CustomInputStyle.toModifier(variant)
+            .then(modifier).attrsModifier {
                 name?.let {
                     attr("name", it)
                 }
@@ -64,7 +101,7 @@ fun CustomTextArea(
     onTextChanged: (String) -> Unit
 ) {
     TextArea(value = value,
-        attrs = LoginInputStyle.toModifier().minHeight(54.px).padding(leftRight = 20.px, topBottom = 16.px).outline(
+        attrs = CustomInputStyle.toModifier().minHeight(54.px).padding(leftRight = 20.px, topBottom = 16.px).outline(
             width = 0.px, style = LineStyle.None, color = Colors.Transparent
         ).borderRadius(0.375.cssRem).background(Colors.White).fontSize(14.px).then(modifier).toAttrs {
             onInput {
@@ -80,6 +117,11 @@ val SearchInputStyle by ComponentStyle {
         Modifier.background(AppColors.LightGrey.rgb).padding(left = 20.px, top = 2.px, bottom = 2.px)
             .borderRadius(25.px).border(style = LineStyle.None, color = AppColors.Primary.rgb, width = 0.px)
     }
+
+    cssRule(":not(:hover) input") {
+        Modifier
+            .color(AppColors.HalfBlack.rgb)
+    }
 }
 
 val SearchInputDarkVariant by SearchInputStyle.addVariant {
@@ -88,11 +130,18 @@ val SearchInputDarkVariant by SearchInputStyle.addVariant {
             .border(width = 1.px, color = AppColors.Secondary.rgb, style = LineStyle.Solid)
             .transition(CSSTransition(TransitionProperty.of("border"), duration = 200.ms))
     }
+    cssRule(" input") {
+        Modifier
+            .color(Colors.White)
+    }
 }
 
 @Composable
 fun SearchInput(
-    modifier: Modifier = Modifier, value: String, variant: ComponentVariant? = null, onChange: (String) -> Unit
+    modifier: Modifier = Modifier,
+    value: String,
+    variant: ComponentVariant = ComponentVariant.Empty,
+    onChange: (String) -> Unit
 ) {
     var hasFocus by remember { mutableStateOf(false) }
     Row(
@@ -105,14 +154,12 @@ fun SearchInput(
         Image(src = Res.Images.searchIcon, modifier = Modifier.size(20.px).color(Colors.White))
         Input(type = InputType.Search,
             value = value,
-            modifier = Modifier.fillMaxHeight().weight(1).color(AppColors.HalfBlack.rgb)
-                .border(style = LineStyle.None, width = 0.px)
-                .padding(top = 17.px, bottom = 17.px, left = 14.px, right = 17.px).onFocusIn {
-                    hasFocus = true
-                }.onFocusOut {
-                    hasFocus = false
-                },
             onValueChanged = onChange,
+            modifier = Modifier.weight(1)
+                .fillMaxHeight()
+                .border(style = LineStyle.None, width = 0.px)
+                .padding(top = 17.px, bottom = 17.px, left = 14.px, right = 17.px)
+                .onFocusIn { hasFocus = true }.onFocusOut { hasFocus = false },
             focusBorderColor = Colors.Transparent,
             placeholder = "Search..."
         )

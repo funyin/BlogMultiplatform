@@ -7,13 +7,53 @@ import com.varabyte.kobweb.api.http.setBodyText
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.example.blogmultiplatform.data.ApiController
+import org.example.blogmultiplatform.data.PostsController.latest
 import org.example.blogmultiplatform.data.PostsController.mainPosts
+import org.example.blogmultiplatform.data.PostsController.popular
+import org.example.blogmultiplatform.data.PostsController.sponsoredPosts
 import org.example.blogmultiplatform.models.ApiResponse
 
 @Api("main")
 suspend fun mainPosts(context: ApiContext) {
     try {
         val response = context.data.getValue<ApiController>().mainPosts()
+        context.res.setBodyText(Json.encodeToString(ApiResponse(message = "Success", data = response)))
+        context.res.contentType = "application/json"
+    } catch (e: Exception) {
+        context.res.setBodyText(Json.encodeToString(ApiResponse(message = "Error", data = e.message.toString())))
+    }
+}
+
+@Api("latest")
+suspend fun latestPosts(context: ApiContext) {
+    try {
+        val page: Int = context.req.params["page"]?.toInt() ?: throw Exception("page is required")
+        val size: Int = context.req.params["size"]?.toInt() ?: throw Exception("size is required")
+        val response = context.data.getValue<ApiController>().latest(page = page, size = size)
+        context.res.setBodyText(Json.encodeToString(ApiResponse(message = "Success", data = response)))
+        context.res.contentType = "application/json"
+    } catch (e: Exception) {
+        context.res.setBodyText(Json.encodeToString(ApiResponse(message = "Error", data = e.message.toString())))
+    }
+}
+
+@Api("sponsored")
+suspend fun sponsoredPosts(context: ApiContext) {
+    try {
+        val response = context.data.getValue<ApiController>().sponsoredPosts()
+        context.res.setBodyText(Json.encodeToString(ApiResponse(message = "Success", data = response)))
+        context.res.contentType = "application/json"
+    } catch (e: Exception) {
+        context.res.setBodyText(Json.encodeToString(ApiResponse(message = "Error", data = e.message.toString())))
+    }
+}
+
+@Api("popular")
+suspend fun popularPosts(context: ApiContext) {
+    try {
+        val page: Int = context.req.params["page"]?.toInt() ?: throw Exception("page is required")
+        val size: Int = context.req.params["size"]?.toInt() ?: throw Exception("size is required")
+        val response = context.data.getValue<ApiController>().popular(page = page, size = size)
         context.res.setBodyText(Json.encodeToString(ApiResponse(message = "Success", data = response)))
         context.res.contentType = "application/json"
     } catch (e: Exception) {

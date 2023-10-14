@@ -1,7 +1,6 @@
 package org.example.blogmultiplatform.data
 
 import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Sorts
 import com.mongodb.client.model.Sorts.descending
 import com.mongodb.client.model.Updates
 import kotlinx.coroutines.flow.firstOrNull
@@ -63,8 +62,45 @@ object PostsController {
         return postsCollection
             .withDocumentClass<PostLight>()
             .find(Filters.eq(Post::main.name, true))
-            .sort(Sorts.descending(PostLight::date.name))
+            .sort(descending(PostLight::date.name))
             .limit(4)
+            .toList()
+    }
+
+    suspend fun ApiController.sponsoredPosts(): List<PostLight> {
+        return postsCollection
+            .withDocumentClass<PostLight>()
+            .find(Filters.eq(Post::sponsored.name, true))
+            .sort(descending(PostLight::date.name))
+            .limit(2)
+            .toList()
+    }
+
+    suspend fun ApiController.latest(page: Int, size: Int): List<PostLight> {
+        return postsCollection
+            .withDocumentClass<PostLight>()
+            .find(
+                Filters.and(
+                    listOf(
+                        Filters.eq(Post::main.name, false),
+                        Filters.eq(Post::popular.name, false),
+                        Filters.eq(Post::sponsored.name, false),
+                    )
+                )
+            )
+            .sort(descending(PostLight::date.name))
+            .sort(sort = descending(PostLight::date.name))
+            .skip((page - 1) * size).limit(size)
+            .toList()
+    }
+
+    suspend fun ApiController.popular(page: Int, size: Int): List<PostLight> {
+        return postsCollection
+            .withDocumentClass<PostLight>()
+            .find(Filters.eq(Post::popular.name, true))
+            .sort(descending(PostLight::date.name))
+            .sort(sort = descending(PostLight::date.name))
+            .skip((page - 1) * size).limit(size)
             .toList()
     }
 }

@@ -73,6 +73,7 @@ fun OverflowSidePanel(
                 .background(AppColors.Secondary.rgb)
                 .scrollBehavior(ScrollBehavior.Smooth)
                 .width(if (breakPoint > Breakpoint.MD) 50.percent else 25.percent)
+                .minWidth(200.px)
         ) {
             Row(
                 modifier = Modifier.height(Res.Dimens.TOP_PANEL_HEIGHT.px).padding(all = 24.px).margin(bottom = 60.px),

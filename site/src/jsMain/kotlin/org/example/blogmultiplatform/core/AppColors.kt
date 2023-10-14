@@ -17,6 +17,6 @@ enum class AppColors(
     Yellow(hex = "#FFEC45", rgb = rgb(r = 255, g = 236, b = 69)),
     Red(hex = "#FF6359", rgb = rgb(r = 255, g = 99, b = 89)),
     Purple(hex = "#8B6DFF", rgb = rgb(r = 139, g = 109, b = 255)),
-    Sponsored(hex = "#3300FF", rgb = rgb(r = 51, g = 0, b = 255)),
+    Blue(hex = "#3300FF", rgb = rgb(r = 51, g = 0, b = 255)),
     Tertiary(hex = "#001925", rgb = rgb(r = 0, g = 25, b = 37))
 }
