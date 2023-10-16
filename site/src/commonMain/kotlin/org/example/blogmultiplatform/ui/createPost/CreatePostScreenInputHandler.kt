@@ -6,6 +6,7 @@ import com.copperleaf.ballast.postInput
 import kotlinx.datetime.Clock
 import org.example.blogmultiplatform.data.api.PostApi
 import org.example.blogmultiplatform.data.repository.PostRepository
+import org.example.blogmultiplatform.data.repository.ThirdPartyRepository
 import org.example.blogmultiplatform.models.*
 import org.example.blogmultiplatform.ui.createPost.CreatePostContract.Events
 import org.example.blogmultiplatform.ui.createPost.CreatePostContract.Inputs
@@ -13,6 +14,7 @@ import org.example.blogmultiplatform.ui.createPost.CreatePostContract.State
 
 class CreatePostScreenInputHandler(private val postApi: PostApi) : InputHandler<Inputs, Events, State> {
     private val repository = PostRepository(postApi.apiClient)
+    private val tpRepository = ThirdPartyRepository(postApi.apiClient)
     override suspend fun InputHandlerScope<Inputs, Events, State>.handleInput(
         input: Inputs
     ) {
@@ -56,9 +58,7 @@ class CreatePostScreenInputHandler(private val postApi: PostApi) : InputHandler<
             }
 
             is Inputs.ImageUrl -> {
-                updateState {
-                    it.copy(imageUrl = input.value)
-                }
+                updateState { it.copy(imageUrl = input.value) }
             }
 
             Inputs.ToggleShowPreview -> {
@@ -114,11 +114,12 @@ class CreatePostScreenInputHandler(private val postApi: PostApi) : InputHandler<
                 if (!sanityCheck(uiState))
                     return
                 val request = buildRequest(uiState)
-                updateState {
-                    it.copy(createPostState = UiState.Loading)
-                }
+                updateState { it.copy(createPostState = UiState.Loading) }
                 sideJob("createPost") {
                     try {
+                        if (!uiState.imageUrl.startsWith("http")) {
+                            request.thumbnail = uiState.file
+                        }
                         val response = postApi.createPost(request)
                         postInput(Inputs.CreatePostResponse(UiState.Success(response)))
                         if (response) postEvent(Events.PostCreated)
@@ -208,6 +209,9 @@ class CreatePostScreenInputHandler(private val postApi: PostApi) : InputHandler<
                 updateState { it.copy(updatePostState = UiState.Loading) }
                 sideJob("updatePost") {
                     try {
+                        if (!uiState.imageUrl.startsWith("http")) {
+                            request.thumbnail = uiState.file
+                        }
                         val response = repository.updatePost(request)
                         postInput(Inputs.UpdatePostResponse(response))
                     } catch (e: Exception) {
@@ -220,6 +224,10 @@ class CreatePostScreenInputHandler(private val postApi: PostApi) : InputHandler<
                 updateState { it.copy(updatePostState = input.state) }
                 if (input.state.isSuccess)
                     postEvent(Events.PostUpdated)
+            }
+
+            is Inputs.SelectFile -> {
+                updateState { it.copy(imageUrl = input.fileName, file = input.file) }
             }
         }
     }
@@ -234,7 +242,7 @@ class CreatePostScreenInputHandler(private val postApi: PostApi) : InputHandler<
             popular = uiState.popular,
             category = uiState.category?.name.toString(),
             main = uiState.main,
-            sponsored = uiState.sponsored
+            sponsored = uiState.sponsored,
         )
 
     private suspend fun InputHandlerScope<Inputs, Events, State>.sanityCheck(

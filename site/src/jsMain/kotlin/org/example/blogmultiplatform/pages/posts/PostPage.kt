@@ -66,7 +66,7 @@ fun PostPage() {
                     )
                     Box(
                         modifier = Modifier.fillMaxWidth()
-                            .height(600.px)
+                            .maxHeight(600.px)
                             .background(AppColors.LightGrey.rgb)
                             .margin(top = 12.px)
                     ) {

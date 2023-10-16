@@ -21,7 +21,7 @@ open class CreatePostRequest(
     open val date: Long,
     open val title: String,
     open val subtitle: String,
-    open val thumbnail: String,
+    open var thumbnail: String,
     open val content: String,
     open val category: String,
     open val popular: Boolean,
@@ -36,7 +36,7 @@ expect class UpdatePostRequest {
     val date: Long
     val title: String
     val subtitle: String
-    val thumbnail: String
+    var thumbnail: String
     val content: String
     val category: String
     val popular: Boolean

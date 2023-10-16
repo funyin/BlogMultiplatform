@@ -1,7 +1,9 @@
 package org.example.blogmultiplatform.pages.admin.posts
 
 import androidx.compose.runtime.*
-import com.varabyte.kobweb.compose.css.*
+import com.varabyte.kobweb.compose.css.CSSTransition
+import com.varabyte.kobweb.compose.css.TransitionProperty
+import com.varabyte.kobweb.compose.css.Visibility
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.foundation.layout.Spacer
@@ -78,7 +80,7 @@ fun PostsPage() {
                             Modifier.visibility(Visibility.Visible)
                         )
                 ) {
-                    viewModel.deletePosts()
+                    viewModel.postState(uiState.copy(showConfirmDeleteDialog = true))
                 }
             }
             when (postsState) {
@@ -144,5 +146,12 @@ fun PostsPage() {
         MessagePopup(message = deletePostsState.errorMessage) {
             viewModel.postState(uiState.copy(deletePostsState = UiState.Initial))
         }
+
+    Dialog(show = uiState.showConfirmDeleteDialog, message = "Are you sure you want to delete these posts?", onClose = {
+        viewModel.postState(uiState.copy(showConfirmDeleteDialog = false))
+    }) {
+        viewModel.postState(uiState.copy(showConfirmDeleteDialog = false))
+        viewModel.deletePosts()
+    }
 }
 

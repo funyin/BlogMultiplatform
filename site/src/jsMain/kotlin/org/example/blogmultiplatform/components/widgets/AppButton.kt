@@ -1,22 +1,22 @@
 package org.example.blogmultiplatform.components.widgets
 
 import androidx.compose.runtime.Composable
+import com.varabyte.kobweb.compose.css.CSSTransition
 import com.varabyte.kobweb.compose.css.Cursor
 import com.varabyte.kobweb.compose.css.FontWeight
+import com.varabyte.kobweb.compose.css.TransitionProperty
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.graphics.Colors
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.compose.ui.toAttrs
 import com.varabyte.kobweb.silk.components.icons.fa.FaSpinner
 import com.varabyte.kobweb.silk.components.icons.fa.IconSize
-import com.varabyte.kobweb.silk.components.style.ComponentStyle
-import com.varabyte.kobweb.silk.components.style.ComponentVariant
-import com.varabyte.kobweb.silk.components.style.addVariant
-import com.varabyte.kobweb.silk.components.style.toModifier
+import com.varabyte.kobweb.silk.components.style.*
 import com.varabyte.kobweb.silk.components.text.SpanText
 import org.example.blogmultiplatform.core.AppColors
 import org.example.blogmultiplatform.res.Res
 import org.jetbrains.compose.web.css.LineStyle
+import org.jetbrains.compose.web.css.ms
 import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.dom.Button
 
@@ -46,6 +46,22 @@ val AppButtonStyle by ComponentStyle {
 val AppButtonRoundedVariant by AppButtonStyle.addVariant {
     base {
         Modifier.borderRadius(35.px)
+    }
+}
+
+val AppButtonTextVariant by AppButtonStyle.addVariant {
+    base {
+        Modifier
+            .backgroundColor(Colors.Transparent)
+            .color(AppColors.Primary.rgb)
+            .transition(
+                CSSTransition(TransitionProperty.of("background"), 200.ms),
+                CSSTransition(TransitionProperty.of("color"), 210.ms),
+            )
+    }
+    hover {
+        Modifier.background(AppColors.Primary.rgb)
+            .color(Colors.White)
     }
 }
 

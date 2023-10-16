@@ -44,7 +44,7 @@ actual data class UpdatePostRequest(
     actual val date: Long,
     actual val title: String,
     actual val subtitle: String,
-    actual val thumbnail: String,
+    actual var thumbnail: String,
     actual val content: String,
     actual val category: String,
     actual val popular: Boolean,

@@ -20,7 +20,6 @@ import com.varabyte.kobweb.silk.components.style.hover
 import com.varabyte.kobweb.silk.components.style.toModifier
 import com.varabyte.kobweb.silk.theme.breakpoint.rememberBreakpoint
 import kotlinx.browser.document
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.example.blogmultiplatform.components.layouts.AdminPageLayout
 import org.example.blogmultiplatform.components.widgets.*
@@ -30,9 +29,6 @@ import org.example.blogmultiplatform.modules.posts.create.CreatePostScreenEventH
 import org.example.blogmultiplatform.modules.posts.create.CreatePostViewModel
 import org.example.blogmultiplatform.res.Res
 import org.example.blogmultiplatform.ui.createPost.CreatePostContract
-import org.intellij.markdown.flavours.commonmark.CommonMarkFlavourDescriptor
-import org.intellij.markdown.html.HtmlGenerator
-import org.intellij.markdown.parser.MarkdownParser
 import org.jetbrains.compose.web.attributes.InputType
 import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.css.AlignSelf
@@ -63,15 +59,7 @@ fun CreatePostPage() {
         }
     }
     LaunchedEffect(uiState.content) {
-        val src = uiState.content
-        val flavour = CommonMarkFlavourDescriptor()
-        val parsedTree = MarkdownParser(flavour).buildMarkdownTreeFromString(src)
-        val html = HtmlGenerator(src, parsedTree, flavour).generateHtml()
-        document.getElementById(Res.Id.previewId)?.innerHTML = html
-        launch {
-            delay(100)
-            js("hljs.highlightAll()") as? Unit
-        }
+        injectMarkDown(markDown = uiState.content, containerId = Res.Id.previewId)
     }
     val getPostState = uiState.getPostState
     AdminPageLayout {
@@ -94,7 +82,10 @@ fun CreatePostPage() {
             }
         }
     }
-    if (actionState is UiState.Error) MessagePopup(message = actionState.errorMessage) {
+    Toast(
+        message = if (actionState is UiState.Error) actionState.errorMessage else "",
+        show = actionState is UiState.Error
+    ) {
         viewModel.trySend(CreatePostContract.Inputs.ClosePopup)
     }
     if (uiState.showLinkPopup != null)
@@ -204,8 +195,8 @@ private fun CreatePostForm(viewModel: CreatePostViewModel) {
         if (!uiState.pasteImageUrl) AppButton(
             modifier = Modifier.width(92.px).margin(left = 14.px), text = "Upload"
         ) {
-            document.loadDataUrlFromDisk(accept = "image/png, image/jpg") {
-                viewModel.trySend(CreatePostContract.Inputs.ImageUrl(filename))
+            document.loadDataUrlFromDisk("image/png, image/jpg") {
+                viewModel.trySend(CreatePostContract.Inputs.SelectFile(file = it, fileName = filename))
             }
         }
     }

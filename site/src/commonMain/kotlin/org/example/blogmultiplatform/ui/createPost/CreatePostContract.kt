@@ -19,6 +19,7 @@ object CreatePostContract {
         val category: Category? = null,
         val pasteImageUrl: Boolean = false,
         val imageUrl: String = "",
+        val file: String = "",
         val activeKeys: List<EditorKey> = emptyList(),
         val showPreview: Boolean = false,
         val content: String = "",
@@ -50,6 +51,7 @@ object CreatePostContract {
         data class UpdateCategory(val value: Category) : Inputs
         data class UpdatePastImageUrl(val value: Boolean) : Inputs
         data class ImageUrl(val value: String) : Inputs
+        data class SelectFile(val file: String, val fileName: String) : Inputs
         data class ToggleEditorKey(val key: EditorKey, val selection: IntRange) : Inputs
         data object ToggleShowPreview : Inputs
         data class UpdateContent(val value: String) : Inputs

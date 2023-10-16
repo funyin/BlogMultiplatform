@@ -36,6 +36,7 @@ val CustomInputStyle by ComponentStyle {
             .padding(leftRight = 20.px, topBottom = 16.px)
             .outline(width = 0.px, style = LineStyle.None, color = Colors.Transparent)
             .background(Colors.White)
+            .borderRadius(0.375.cssRem)
             .border(style = LineStyle.None, width = 0.px)
             .outline(style = LineStyle.None, width = 0.px)
             .fontSize(14.px)

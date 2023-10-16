@@ -10,5 +10,6 @@ data class PostsUIState(
     val showMoreState: UiState<List<PostLight>> = UiState.Initial,
     val page: Int = 0,
     val selectedPosts: List<String> = emptyList(),
-    val deletePostsState: UiState<Boolean> = UiState.Initial
+    val deletePostsState: UiState<Boolean> = UiState.Initial,
+    val showConfirmDeleteDialog: Boolean = false
 )

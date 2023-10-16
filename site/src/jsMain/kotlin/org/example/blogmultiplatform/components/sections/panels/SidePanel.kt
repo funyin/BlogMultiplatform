@@ -22,6 +22,7 @@ import org.jetbrains.compose.web.css.px
 
 @Composable
 fun SidePanel(modifier: Modifier) {
+    val pageContext = rememberPageContext()
     Column(
         modifier = Modifier.padding(topBottom = 40.px, leftRight = 50.px)
             .width(Res.Dimens.SIDE_PANEL_WIDTH.px)
@@ -29,7 +30,11 @@ fun SidePanel(modifier: Modifier) {
             .background(AppColors.Secondary.rgb)
             .then(modifier)
     ) {
-        Image(Res.Images.logo, desc = "Logo", modifier = Modifier.margin(bottom = 60.px))
+        Image(Res.Images.logo, desc = "Logo", modifier = Modifier.margin(bottom = 60.px)
+            .cursor(Cursor.Pointer)
+            .onClick {
+                pageContext.router.navigateTo("/")
+            })
         SpanText(
             "Dashboard",
             modifier = Modifier

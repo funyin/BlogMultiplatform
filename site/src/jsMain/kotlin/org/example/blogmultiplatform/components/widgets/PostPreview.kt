@@ -15,22 +15,27 @@ import com.varabyte.kobweb.compose.ui.thenIf
 import com.varabyte.kobweb.silk.components.forms.Checkbox
 import com.varabyte.kobweb.silk.components.forms.CheckboxSize
 import com.varabyte.kobweb.silk.components.graphics.Image
-import com.varabyte.kobweb.silk.components.style.ComponentStyle
-import com.varabyte.kobweb.silk.components.style.ComponentVariant
-import com.varabyte.kobweb.silk.components.style.addVariant
-import com.varabyte.kobweb.silk.components.style.toModifier
+import com.varabyte.kobweb.silk.components.style.*
 import com.varabyte.kobweb.silk.components.text.SpanText
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJSDate
 import org.example.blogmultiplatform.core.AppColors
 import org.example.blogmultiplatform.models.PostLight
 import org.example.blogmultiplatform.res.Res
-import org.jetbrains.compose.web.css.DisplayStyle
-import org.jetbrains.compose.web.css.LineStyle
-import org.jetbrains.compose.web.css.ms
-import org.jetbrains.compose.web.css.px
+import org.jetbrains.compose.web.css.*
 
 val PostPreviewStyle by ComponentStyle {
+    base {
+        Modifier.scale(100.percent)
+            .transition(
+                CSSTransition(TransitionProperty.of("border"), duration = 300.ms),
+                CSSTransition(TransitionProperty.of("padding"), duration = 500.ms),
+                CSSTransition(TransitionProperty.of("scale"), duration = 200.ms)
+            )
+    }
+    hover {
+        Modifier.scale(102.percent)
+    }
     cssRule(" #${Res.Id.thumbnailVert}") {
         Modifier
             .background(AppColors.LightGrey.rgb)
@@ -160,10 +165,6 @@ fun PostPreview(
                 .borderRadius(4.px)
         )
         .cursor(Cursor.Pointer)
-        .transition(
-            CSSTransition(TransitionProperty.of("border"), duration = 300.ms),
-            CSSTransition(TransitionProperty.of("padding"), duration = 500.ms)
-        )
         .onClick {
             if (selectable)
                 onCheckChanged(!checked)
