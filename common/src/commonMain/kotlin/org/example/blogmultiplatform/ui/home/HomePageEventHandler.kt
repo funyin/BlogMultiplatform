@@ -12,7 +12,7 @@ class HomePageEventHandler : EventHandler<
             HomePageContract.Events,
             HomePageContract.State>.handleEvent(
         event: HomePageContract.Events
-    ): Unit = when (event) {
+    ): Unit = when {
         else -> {
 
         }

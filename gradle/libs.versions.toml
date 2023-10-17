@@ -1,7 +1,11 @@
 [versions]
+activity-compose = "1.8.0"
+androidx-material3 = "1.2.0-alpha09"
+core-ktx = "1.7.0"
 jetbrains-compose = "1.5.1"
 kobweb = "0.14.0"
 kotlin = "1.9.10"
+lifecycle-runtime-ktx = "2.3.1"
 mongodb = "4.10.1"
 kotlinx-serialization = "1.6.0"
 serialization-plugin = "1.9.0"
@@ -11,6 +15,12 @@ kotlinx-datetime="0.4.1"
 markdown="0.5.0"
 
 [libraries]
+# Android
+activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
+androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "androidx-material3" }
+compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "jetbrains-compose" }
+core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
+# - end
 kobweb-api = { module = "com.varabyte.kobweb:kobweb-api", version.ref = "kobweb" }
 kobweb-core = { module = "com.varabyte.kobweb:kobweb-core ", version.ref = "kobweb" }
 kobweb-silk-core = { module = "com.varabyte.kobweb:kobweb-silk", version.ref = "kobweb" }
@@ -27,6 +37,7 @@ ktor-content-negotiation= { module = "io.ktor:ktor-client-content-negotiation", 
 ballast-core= { module = "io.github.copper-leaf:ballast-core", version.ref = "ballast-version" }
 ballast-saved-state= { module = "io.github.copper-leaf:ballast-saved-state", version.ref = "ballast-version" }
 kotlinx-datetime= { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
 markdown= { module = "org.jetbrains:markdown", version.ref = "markdown" }
 
 [plugins]

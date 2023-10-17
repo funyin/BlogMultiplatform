@@ -7,7 +7,6 @@ plugins {
     alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.kobweb.application)
     alias(libs.plugins.serialization.plugin)
-    // alias(libs.plugins.kobwebx.markdown)
 }
 
 group = "org.example.blogmultiplatform"
@@ -43,19 +42,6 @@ kotlin {
     configAsKobwebApplication("blogmultiplatform", includeServer = true)
 
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(compose.runtime)
-                implementation(libs.kotlinx.serialization)
-                implementation(libs.ballast.core)
-                implementation(libs.ballast.saved.state)
-                implementation(libs.kotlinx.datetime)
-                implementation(libs.ktor.client.core)
-                implementation(libs.ktor.client.logging)
-                implementation(libs.ktor.client.serialization)
-                implementation(libs.ktor.content.negotiation)
-            }
-        }
 
         val jsMain by getting {
             dependencies {
@@ -64,10 +50,12 @@ kotlin {
                 implementation(libs.kobweb.silk.core)
                 implementation(libs.kobweb.silk.icons.fa)
                 implementation(libs.kotlinx.serialization)
+                implementation(libs.ballast.core)
                 implementation(libs.ballast.saved.state)
                 implementation(libs.markdown)
                 implementation(libs.kotlinx.datetime)
                 implementation(libs.ktor.client.js)
+                implementation(project(":common"))
                 // implementation(libs.kobwebx.markdown)
             }
         }
@@ -76,6 +64,8 @@ kotlin {
                 implementation(libs.kobweb.api)
                 implementation(libs.kotlin.mongodb)
                 implementation(libs.kotlinx.serialization)
+                implementation(libs.ktor.content.negotiation)
+                implementation(project(":common"))
             }
         }
     }

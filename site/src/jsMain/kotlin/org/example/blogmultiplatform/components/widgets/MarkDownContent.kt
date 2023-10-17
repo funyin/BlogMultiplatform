@@ -12,6 +12,7 @@ import com.varabyte.kobweb.compose.ui.toAttrs
 import com.varabyte.kobweb.silk.components.style.ComponentStyle
 import com.varabyte.kobweb.silk.components.style.toModifier
 import kotlinx.browser.document
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.example.blogmultiplatform.res.Res
@@ -35,15 +36,18 @@ val MarkdownContentStyle by ComponentStyle {
 @Composable
 fun MarkDownContent(modifier: Modifier = Modifier, markDown: String) {
     LaunchedEffect(markDown) {
-        val src = markDown
-        val flavour = CommonMarkFlavourDescriptor()
-        val parsedTree = MarkdownParser(flavour).buildMarkdownTreeFromString(src)
-        val html = HtmlGenerator(src, parsedTree, flavour).generateHtml()
-        document.getElementById(Res.Id.markdownContent)?.innerHTML = html
-        launch {
-            delay(100)
-            js("hljs.highlightAll()") as? Unit
-        }
+        injectMarkDown(markDown, containerId = Res.Id.markdownContent)
     }
     Div(attrs = modifier.id(Res.Id.markdownContent).then(MarkdownContentStyle.toModifier()).toAttrs())
+}
+
+fun CoroutineScope.injectMarkDown(markDown: String, containerId: String) {
+    val flavour = CommonMarkFlavourDescriptor()
+    val parsedTree = MarkdownParser(flavour).buildMarkdownTreeFromString(markDown)
+    val html = HtmlGenerator(markDown, parsedTree, flavour).generateHtml()
+    document.getElementById(containerId)?.innerHTML = html
+    launch {
+        delay(100)
+        js("hljs.highlightAll()") as? Unit
+    }
 }
