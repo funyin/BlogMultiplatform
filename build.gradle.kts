@@ -12,6 +12,7 @@ plugins {
     alias(libs.plugins.serialization.plugin) apply false
 
     id("com.android.application") version "8.1.0" apply false
+    id("com.android.library") version "8.1.0" apply false
     id("org.jetbrains.kotlin.android") version "1.5.31" apply false
     id("io.realm.kotlin") version "1.7.1" apply false
 }

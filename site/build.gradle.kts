@@ -45,6 +45,7 @@ kotlin {
 
         val jsMain by getting {
             dependencies {
+                implementation(compose.runtime)
                 implementation(compose.html.core)
                 implementation(libs.kobweb.core)
                 implementation(libs.kobweb.silk.core)
@@ -61,6 +62,7 @@ kotlin {
         }
         val jvmMain by getting {
             dependencies {
+                implementation(compose.runtime)
                 implementation(libs.kobweb.api)
                 implementation(libs.kotlin.mongodb)
                 implementation(libs.kotlinx.serialization)

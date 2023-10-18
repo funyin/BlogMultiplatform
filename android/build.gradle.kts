@@ -51,7 +51,8 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.activity.compose)
-    implementation("androidx.compose.runtime:runtime:1.5.1")
+//    implementation(libs.compose.runtime)
+//    implementation("androidx.compose.runtime:runtime:1.5.3")
     implementation("androidx.compose.ui:ui:${rootProject.extra["compose_version"]}")
     implementation("androidx.compose.ui:ui-tooling-preview:${rootProject.extra["compose_version"]}")
     implementation(libs.androidx.material3)
@@ -65,5 +66,5 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling:${rootProject.extra["compose_version"]}")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:${rootProject.extra["compose_version"]}")
     debugImplementation("androidx.compose.ui:ui-test-manifest:${rootProject.extra["compose_version"]}")
-//    implementation(project(":common"))
+    implementation(project(":common"))
 }
