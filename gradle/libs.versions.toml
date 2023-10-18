@@ -1,6 +1,7 @@
 [versions]
 activity-compose = "1.8.0"
 androidx-material3 = "1.2.0-alpha09"
+coil-compose = "2.4.0"
 core-ktx = "1.7.0"
 jetbrains-compose = "1.5.1"
 kobweb = "0.14.0"
@@ -8,18 +9,24 @@ kotlin = "1.9.10"
 lifecycle-runtime-ktx = "2.3.1"
 mongodb = "4.10.1"
 kotlinx-serialization = "1.6.0"
+android-navigation = "2.7.4"
 serialization-plugin = "1.9.0"
 ktor-version="2.3.4"
 ballast-version="4.0.0"
 kotlinx-datetime="0.4.1"
 markdown="0.5.0"
+mongodb-mobile = "1.7.1"
 
 [libraries]
 # Android
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
 androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "androidx-material3" }
+#androidx-navigation-common = { module = "androidx.navigation:navigation-common", version.ref = "android-navigation" }
+android-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "android-navigation" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil-compose" }
 compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "jetbrains-compose" }
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
+mongodb-sync = { module = "io.realm.kotlin:library-sync", version.ref = "mongodb-mobile" }
 # - end
 kobweb-api = { module = "com.varabyte.kobweb:kobweb-api", version.ref = "kobweb" }
 kobweb-core = { module = "com.varabyte.kobweb:kobweb-core ", version.ref = "kobweb" }
@@ -31,6 +38,7 @@ kotlin-mongodb = { module = "org.mongodb:mongodb-driver-kotlin-coroutine", versi
 kotlinx-serialization= { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 ktor-client-core= { module = "io.ktor:ktor-client-core", version.ref = "ktor-version" }
 ktor-client-js= { module = "io.ktor:ktor-client-js", version.ref = "ktor-version" }
+ktor-client-android= { module = "io.ktor:ktor-client-android", version.ref = "ktor-version" }
 ktor-client-logging= { module = "io.ktor:ktor-client-logging", version.ref = "ktor-version" }
 ktor-client-serialization= { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor-version" }
 ktor-content-negotiation= { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor-version" }
@@ -47,3 +55,5 @@ kobweb-library = { id = "com.varabyte.kobweb.library", version.ref = "kobweb" }
 kobwebx-markdown = { id = "com.varabyte.kobwebx.markdown", version.ref = "kobweb" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 serialization-plugin = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "serialization-plugin" }
+#android
+mongodb-realm = { id = "io.realm.kotlin", version.ref = "mongodb-mobile" }

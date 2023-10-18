@@ -51,12 +51,12 @@ expect class UpdatePostRequest {
 @Serializable
 expect class PostLight {
     @SerialName("_id")
-    val id: String
-    val date: Long
-    val title: String
-    val subtitle: String
-    val thumbnail: String
-    val category: String
+    var id: String
+    var date: Long
+    var title: String
+    var subtitle: String
+    var thumbnail: String
+    var category: String
 }
 
 @Serializable

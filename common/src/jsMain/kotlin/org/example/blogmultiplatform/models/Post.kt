@@ -21,12 +21,12 @@ actual data class Post(
 @Serializable
 actual data class PostLight(
     @SerialName("_id")
-    actual val id: String,
-    actual val date: Long,
-    actual val title: String,
-    actual val subtitle: String,
-    actual val thumbnail: String,
-    actual val category: String,
+    actual var id: String,
+    actual var date: Long,
+    actual var title: String,
+    actual var subtitle: String,
+    actual var thumbnail: String,
+    actual var category: String,
 )
 
 @Serializable

@@ -1,7 +1,8 @@
-package org.example.blogmultiplatform.ui.home
+package org.example.blogmultiplatform.modules.home
 
 import com.copperleaf.ballast.EventHandler
 import com.copperleaf.ballast.EventHandlerScope
+import org.example.blogmultiplatform.ui.home.HomePageContract
 
 class HomePageEventHandler : EventHandler<
         HomePageContract.Inputs,

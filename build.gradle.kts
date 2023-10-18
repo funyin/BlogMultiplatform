@@ -11,10 +11,11 @@ plugins {
     alias(libs.plugins.kobweb.library) apply false
     alias(libs.plugins.serialization.plugin) apply false
 
+    //android
     id("com.android.application") version "8.1.0" apply false
     id("com.android.library") version "8.1.0" apply false
     id("org.jetbrains.kotlin.android") version "1.5.31" apply false
-    id("io.realm.kotlin") version "1.7.1" apply false
+    alias(libs.plugins.mongodb.realm) apply false
 }
 subprojects {
     repositories {

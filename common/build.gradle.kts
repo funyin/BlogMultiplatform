@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.serialization.plugin)
+    alias(libs.plugins.mongodb.realm)
     id("com.android.library")
 }
 
@@ -11,13 +12,21 @@ version = "1.0-SNAPSHOT"
 android {
     compileSdk = 34
 //    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-//    defaultConfig {
-//        minSdk = 21
-//    }
+    defaultConfig {
+        minSdk = 24
+    }
+    buildFeatures {
+        buildConfig = true
+    }
+    buildTypes{
+        buildTypes.all {
+            buildConfigField(type = "String", name = "RealmAppId", value = "\"application-0-hoehk\"")
+        }
+    }
     namespace = "com.example.blogmultiplatform"
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 }
 
@@ -43,6 +52,11 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(libs.kotlinx.serialization)
+                implementation(libs.ballast.core)
+                implementation(libs.ballast.saved.state)
+                implementation(libs.ktor.client.android)
+                implementation(libs.mongodb.sync)
+
             }
         }
 

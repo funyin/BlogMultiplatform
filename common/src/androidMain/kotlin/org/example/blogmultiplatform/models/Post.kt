@@ -1,5 +1,8 @@
 package org.example.blogmultiplatform.models
 
+import io.realm.kotlin.types.RealmObject
+import io.realm.kotlin.types.annotations.PersistedName
+import io.realm.kotlin.types.annotations.PrimaryKey
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -19,15 +22,17 @@ actual data class Post(
 )
 
 @Serializable
-actual data class PostLight(
+actual class PostLight() : RealmObject{
+    @PrimaryKey
+    @PersistedName("_id")
     @SerialName("_id")
-    actual val id: String,
-    actual val date: Long,
-    actual val title: String,
-    actual val subtitle: String,
-    actual val thumbnail: String,
-    actual val category: String,
-)
+    actual var id: String = ""
+    actual var date: Long = 0
+    actual var title: String = ""
+    actual var subtitle: String = ""
+    actual var thumbnail: String = ""
+    actual var category: String = ""
+}
 
 @Serializable
 actual data class UpdatePostRequest(
