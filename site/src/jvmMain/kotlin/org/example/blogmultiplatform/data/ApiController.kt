@@ -17,7 +17,7 @@ fun initMongoDb(context: InitApiContext) {
 class ApiController(internal val context: InitApiContext) {
     internal val client = MongoClient.create(
 //        "mongodb://localhost:27017"
-        "mongodb+srv://funyin:0QL6GEkj3kF1iM1F@atlascluster.dfnaifk.mongodb.net/?retryWrites=true&w=majority"
+        System.getenv("MONGO_URI")
     )
     internal val database = client.getDatabase(dbName)
     internal val usersCollection = database.getCollection<User>("users")
