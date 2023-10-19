@@ -3,6 +3,7 @@
 build
 out
 kotlin-js-store
+local.properties
 
 # IntelliJ ignores
 *.iml

@@ -1,19 +1,30 @@
 import com.varabyte.kobweb.gradle.application.util.configAsKobwebApplication
 import kotlinx.html.link
 import kotlinx.html.script
+import java.util.*
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.kobweb.application)
     alias(libs.plugins.serialization.plugin)
+    id("com.github.gmazzo.buildconfig")
 }
 
 group = "org.example.blogmultiplatform"
 version = "1.0-SNAPSHOT"
 
+val properties = Properties()
+val propertiesFile = project.rootProject.file("local.properties")
+if (propertiesFile.exists()) {
+    properties.load(propertiesFile.inputStream())
+}
+
+val mongoUri = properties.getProperty("MONGO_URI")
+
 kobweb {
     app {
+        globals.put("MONGO_URI", mongoUri)
         index {
             description.set("Powered by Kobweb")
             head.add {
@@ -36,6 +47,9 @@ kobweb {
             }
         }
     }
+}
+buildConfig {
+    buildConfigField("String", "MONGO_URI", "\"${mongoUri}\"")
 }
 
 kotlin {

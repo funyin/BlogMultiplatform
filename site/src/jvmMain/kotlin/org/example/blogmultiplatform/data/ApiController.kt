@@ -8,6 +8,7 @@ import org.example.blogmultiplatform.core.Properties.dbName
 import org.example.blogmultiplatform.models.Post
 import org.example.blogmultiplatform.models.Subscriber
 import org.example.blogmultiplatform.models.User
+import org.example.blogmultiplatform.site.BuildConfig
 
 @InitApi
 fun initMongoDb(context: InitApiContext) {
@@ -15,11 +16,8 @@ fun initMongoDb(context: InitApiContext) {
 }
 
 class ApiController(internal val context: InitApiContext) {
-    internal val client = MongoClient.create(
-//        "mongodb://localhost:27017"
-        System.getenv("MONGO_URI")
-    )
-    internal val database = client.getDatabase(dbName)
+    private val client = MongoClient.create(BuildConfig.MONGO_URI)
+    private val database = client.getDatabase(dbName)
     internal val usersCollection = database.getCollection<User>("users")
     internal val postsCollection = database.getCollection<Post>("posts")
     internal val subscribersCollection = database.getCollection<Subscriber>("subscribers")
