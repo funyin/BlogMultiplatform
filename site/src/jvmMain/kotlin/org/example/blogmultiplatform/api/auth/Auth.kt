@@ -6,6 +6,8 @@ import com.varabyte.kobweb.api.data.getValue
 import com.varabyte.kobweb.api.http.setBodyText
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.example.blogmultiplatform.core.errorBody
+import org.example.blogmultiplatform.core.successBody
 import org.example.blogmultiplatform.data.ApiController
 import org.example.blogmultiplatform.data.AuthController.checkUserId
 import org.example.blogmultiplatform.data.AuthController.login
@@ -21,13 +23,14 @@ suspend fun login(context: ApiContext) {
             context.data.getValue<ApiController>().login(it)
         }
         if (user == null) {
-            context.res.setBodyText(Json.encodeToString("User doesn't exist"))
+            context.res.successBody("User doesn't exist")
             return
         }
-        context.res.setBodyText(Json.encodeToString(user))
+        context.res.successBody(user)
     } catch (e: Exception) {
         print(e)
-        context.res.setBodyText(Json.encodeToString(Exception(e.message)))
+        context.logger.error(e.toString())
+        context.res.errorBody(e.message)
     }
 }
 

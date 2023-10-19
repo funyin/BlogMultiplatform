@@ -1,6 +1,6 @@
 package org.example.blogmultiplatform.components.sections.panels
 
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import com.varabyte.kobweb.compose.css.Cursor
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.foundation.layout.Row
@@ -13,6 +13,7 @@ import com.varabyte.kobweb.core.rememberPageContext
 import com.varabyte.kobweb.silk.components.graphics.Image
 import com.varabyte.kobweb.silk.components.style.toModifier
 import com.varabyte.kobweb.silk.components.text.SpanText
+import org.example.blogmultiplatform.components.widgets.Dialog
 import org.example.blogmultiplatform.components.widgets.VectorIcon
 import org.example.blogmultiplatform.core.AppColors
 import org.example.blogmultiplatform.core.SessionManager
@@ -51,6 +52,7 @@ fun SidePanel(modifier: Modifier) {
 fun NavigationItems() {
     val context = rememberPageContext()
     val path = context.route.path
+    var showLogoutDialog by remember { mutableStateOf(false) }
     NavigationItem(
         modifier = Modifier.margin(bottom = 24.px),
         title = "Home",
@@ -79,9 +81,15 @@ fun NavigationItems() {
         title = "Logout",
         icon = Res.PathIcon.logout
     ) {
+        showLogoutDialog = true
+    }
+
+    Dialog(show = showLogoutDialog, message = "Are you sure you want to logout?", onClose = {
+        showLogoutDialog = false
+    }, onPositive = {
         SessionManager.endSession()
         context.router.navigateTo(Res.Routes.login)
-    }
+    })
 }
 
 @Composable

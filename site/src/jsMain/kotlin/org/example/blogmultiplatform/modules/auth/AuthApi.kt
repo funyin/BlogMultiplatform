@@ -14,7 +14,8 @@ object AuthApi {
         return try {
             val response = api.tryPost(apiPath = "/auth/login", body = Json.encodeToString(request).encodeToByteArray())
             response?.decodeToString()?.let { Json.decodeFromString<User>(it) }
-        } catch (e: SerializationException) {
+        } catch (e: Exception) {
+            println(e)
             null
         }
     }

@@ -10,6 +10,11 @@ import org.example.blogmultiplatform.models.User
 class AuthViewModel(private val scope: CoroutineScope) {
     private val repository = AuthRepository()
     val loginState = MutableStateFlow<Result<User>?>(null)
+
+    fun clearLoginState() {
+        loginState.value = null
+    }
+
     fun login(userName: String, password: String) {
 
         try {
