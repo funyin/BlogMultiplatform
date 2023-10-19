@@ -25,3 +25,7 @@ kotlin-js-store
 # Gradle ignores
 .gradle
 
+/.idea/dataSources.local.xml
+/.idea/dataSources.xml
+/.idea/uiDesigner.xml
+/.idea/vcs.xml
