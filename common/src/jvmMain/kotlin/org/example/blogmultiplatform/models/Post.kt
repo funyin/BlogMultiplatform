@@ -27,12 +27,12 @@ actual data class Post(
 actual data class PostLight(
     @SerialName("_id")
     @BsonProperty("_id")
-    actual val id: String = ObjectId().toHexString(),
-    actual val date: Long,
-    actual val title: String,
-    actual val subtitle: String,
-    actual val thumbnail: String,
-    actual val category: String,
+    actual var id: String = ObjectId().toHexString(),
+    actual var date: Long,
+    actual var title: String,
+    actual var subtitle: String,
+    actual var thumbnail: String,
+    actual var category: String,
 )
 
 @Serializable

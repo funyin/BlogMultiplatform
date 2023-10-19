@@ -19,6 +19,9 @@ class MongoSyncRepo {
     private val user = app.currentUser
     private lateinit var realm: Realm
 
+    init {
+        user?.let { configRealm(it) }
+    }
     companion object {
         suspend fun init() {
             App.create(BuildConfig.RealmAppId).login(Credentials.anonymous())
@@ -26,20 +29,38 @@ class MongoSyncRepo {
     }
 
     private fun configRealm(user: User) {
-        val config = SyncConfiguration.Builder(user, setOf(PostLight::class))
-            .initialSubscriptions {
-                add(query = it.query<PostLight>(), name = "Blog Posts")
-            }
-            .log(LogLevel.ALL)
-            .build()
-        realm = Realm.open(config)
+        if (!this::realm.isInitialized) {
+            val config = SyncConfiguration.Builder(user, setOf(PostLight::class))
+                .initialSubscriptions {
+                    add(query = it.query<PostLight>(), name = "Blog Posts")
+                }
+                .log(LogLevel.ALL)
+                .build()
+            realm = Realm.open(config)
+        }
     }
 
     fun readAllPost(): Flow<UiState<List<PostLight>>> {
         return user?.let {
             try {
-                configRealm(it)
                 realm.query<PostLight>()
+                    .asFlow()
+                    .map {
+                        val data = it.list.toList()
+                        UiState.Success(data)
+                    }
+            } catch (e: Throwable) {
+                flow { emit(UiState.Error(e.message.toString())) }
+            }
+        } ?: run {
+            flow { emit(UiState.Error("User not authenticated")) }
+        }
+    }
+
+    fun searchByTitle(title: String): Flow<UiState<List<PostLight>>> {
+        return user?.let {
+            try {
+                realm.query<PostLight>(query = "title CONTAINS[c] $0", title)
                     .asFlow()
                     .map {
                         val data = it.list.toList()

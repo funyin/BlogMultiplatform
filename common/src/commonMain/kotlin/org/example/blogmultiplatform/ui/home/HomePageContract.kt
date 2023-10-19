@@ -5,6 +5,7 @@ expect object HomePageContract {
 
       sealed interface Inputs
 
+
     sealed interface Events {
     }
 }
