@@ -23,10 +23,11 @@ fun SitePageLayout(content: @Composable ColumnScope.(String) -> Unit) {
     val breakpoint = rememberBreakpoint()
     val pageContext = rememberPageContext()
     val search = pageContext.route.params["search"] ?: ""
+    val hideSection = pageContext.route.params["hideSections"].toBoolean()
     var showSidePanel by remember { mutableStateOf(false) }
     var headerState by remember(search) {
         mutableStateOf(HeaderState(search = search) {
-            showSidePanel = true
+            showSidePanel = false
         })
     }
     Box(modifier = Modifier.fillMaxSize()) {
@@ -35,9 +36,10 @@ fun SitePageLayout(content: @Composable ColumnScope.(String) -> Unit) {
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            HeaderSection(breakpoint, state = headerState) {
-                headerState = it
-            }
+            if (!hideSection)
+                HeaderSection(breakpoint, state = headerState) {
+                    headerState = it
+                }
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -45,9 +47,10 @@ fun SitePageLayout(content: @Composable ColumnScope.(String) -> Unit) {
             ) {
                 content(headerState.search)
             }
-            FooterSection()
+            if (!hideSection)
+                FooterSection()
         }
-        if (showSidePanel)
+        if (!showSidePanel && !hideSection)
             OverflowSidePanel(
                 modifier = Modifier.pointerEvents(PointerEvents.Auto),
                 onMenuClose = {
