@@ -10,5 +10,10 @@ server:
     prod:
       script: "build/dist/js/productionExecutable/blogmultiplatform.js"
       siteRoot: ".kobweb/site"
+  cors:
+    hosts:
+      - name: "blogmp.onrender.com"
+        schemes:
+          - "https"
 
   port: 8080
