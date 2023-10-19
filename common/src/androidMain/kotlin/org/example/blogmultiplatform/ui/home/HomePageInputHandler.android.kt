@@ -6,7 +6,6 @@ import com.copperleaf.ballast.postInput
 import kotlinx.coroutines.flow.collectLatest
 import org.example.blogmultiplatform.data.MongoSyncRepo
 import org.example.blogmultiplatform.data.api.core.ApiClient
-import org.example.blogmultiplatform.data.repository.PostRepository
 import org.example.blogmultiplatform.models.UiState
 
 actual class HomePageInputHandler actual constructor(client: ApiClient) :
@@ -14,9 +13,6 @@ actual class HomePageInputHandler actual constructor(client: ApiClient) :
             HomePageContract.Inputs,
             HomePageContract.Events,
             HomePageContract.State> {
-
-
-    private val postsRepository = PostRepository(client)
 
     override suspend fun InputHandlerScope<HomePageContract.Inputs, HomePageContract.Events, HomePageContract.State>.handleInput(
         input: HomePageContract.Inputs
@@ -44,7 +40,6 @@ actual class HomePageInputHandler actual constructor(client: ApiClient) :
             is HomePageContract.Inputs.SearchPostsPosts -> {
                 updateState { it.copy(searchResponse = UiState.Loading, searchValue = input.title) }
                 sideJob("searchPosts") {
-                    MongoSyncRepo.init()
                     val mongoSyncRepo = MongoSyncRepo()
                     mongoSyncRepo.searchByTitle(input.title).collectLatest {
                         postInput(

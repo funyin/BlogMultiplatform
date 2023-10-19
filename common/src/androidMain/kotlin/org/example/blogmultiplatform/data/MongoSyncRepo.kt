@@ -11,6 +11,7 @@ import io.realm.kotlin.mongodb.sync.SyncConfiguration
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import org.example.blogmultiplatform.models.Category
 import org.example.blogmultiplatform.models.PostLight
 import org.example.blogmultiplatform.models.UiState
 
@@ -22,6 +23,7 @@ class MongoSyncRepo {
     init {
         user?.let { configRealm(it) }
     }
+
     companion object {
         suspend fun init() {
             App.create(BuildConfig.RealmAppId).login(Credentials.anonymous())
@@ -58,19 +60,25 @@ class MongoSyncRepo {
     }
 
     fun searchByTitle(title: String): Flow<UiState<List<PostLight>>> {
-        return user?.let {
-            try {
-                realm.query<PostLight>(query = "title CONTAINS[c] $0", title)
-                    .asFlow()
-                    .map {
-                        val data = it.list.toList()
-                        UiState.Success(data)
-                    }
-            } catch (e: Throwable) {
-                flow { emit(UiState.Error(e.message.toString())) }
-            }
-        } ?: run {
-            flow { emit(UiState.Error("User not authenticated")) }
+        return postsQuery("title CONTAINS[c] $0", title)
+    }
+
+    fun searchByCategory(category: Category): Flow<UiState<List<PostLight>>> {
+        return postsQuery("category == $0", category.name)
+    }
+
+    fun postsQuery(query: String, vararg args: Any?): Flow<UiState<List<PostLight>>> = user?.let {
+        try {
+            realm.query<PostLight>(query = query, args.first())
+                .asFlow()
+                .map {
+                    val data = it.list.toList()
+                    UiState.Success(data)
+                }
+        } catch (e: Throwable) {
+            flow { emit(UiState.Error(e.message.toString())) }
         }
+    } ?: run {
+        flow { emit(UiState.Error("User not authenticated")) }
     }
 }

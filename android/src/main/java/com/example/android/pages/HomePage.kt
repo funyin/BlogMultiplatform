@@ -12,11 +12,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.android.components.PostCard
-import com.example.android.ui.theme.BlogMultiplatformTheme
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.example.android.components.*
+import com.example.android.navigation.Page
+import kotlinx.coroutines.launch
 import org.example.blogmultiplatform.models.PostLight
 import org.example.blogmultiplatform.models.UiState
 import org.example.blogmultiplatform.modules.home.HomePageViewModel
@@ -24,22 +26,30 @@ import org.example.blogmultiplatform.ui.home.HomePageContract.Inputs
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomePage() {
+fun HomePage(navController: NavHostController) {
     val scope = rememberCoroutineScope()
     val viewModel: HomePageViewModel = remember(scope) { HomePageViewModel(scope) }
-    LaunchedEffect(Unit) {
-        viewModel.trySend(Inputs.GetAllPosts)
-    }
+//    LaunchedEffect(Unit) {
+//        viewModel.trySend(Inputs.GetAllPosts)
+//    }
     val uiState by viewModel.observeStates().collectAsState()
     val allPostsState = uiState.allPosts
     val searchPostsState = uiState.searchResponse
-    BlogMultiplatformTheme {
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    NavigationDrawer(drawerState = drawerState, onCategorySelect = {
+        scope.launch {
+            drawerState.close()
+        }
+        navController.navigate(Page.Category(it).route)
+    }) {
         Scaffold(topBar = {
             CenterAlignedTopAppBar(title = {
                 Text(text = "Blog")
             }, navigationIcon = {
                 IconButton(onClick = {
-
+                    scope.launch {
+                        drawerState.open()
+                    }
                 }) {
                     Icon(imageVector = Icons.Default.Menu, contentDescription = "menu")
                 }
@@ -76,39 +86,46 @@ fun HomePage() {
                         }
                     }
                 ) {
-                    PostsContent(postsState = searchPostsState)
+                    PostsContent(postsState = searchPostsState) {
+                        viewModel.trySend(Inputs.SearchPostsPosts(uiState.searchValue))
+                    }
                 }
         }) {
-            PostsContent(modifier = Modifier.padding(it), postsState = allPostsState)
+            PostsContent(modifier = Modifier.padding(it), postsState = allPostsState) {
+                viewModel.trySend(Inputs.GetAllPosts)
+            }
         }
     }
 }
 
 @Composable
-private fun PostsContent(modifier: Modifier = Modifier, postsState: UiState<List<PostLight>>) {
+fun PostsContent(modifier: Modifier = Modifier, postsState: UiState<List<PostLight>>, onRetry: () -> Unit) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         when (postsState) {
             is UiState.Error -> {
-                Text(text = postsState.errorMessage, textAlign = TextAlign.Center)
+                ErrorStateView(postsState.errorMessage, onRetry)
             }
 
             UiState.Initial -> {}
-            UiState.Loading -> CircularProgressIndicator()
+            UiState.Loading -> LoadingStateView()
 
             is UiState.Success -> {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 24.dp)
-                ) {
-                    items(postsState.data) {
-                        PostCard(post = it) {
+                if (postsState.data.isEmpty())
+                    EmptyStateView()
+                else
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 24.dp)
+                    ) {
+                        items(postsState.data) {
+                            PostCard(post = it) {
 
+                            }
                         }
-                    }
 
-                }
+                    }
 
             }
         }
@@ -118,5 +135,6 @@ private fun PostsContent(modifier: Modifier = Modifier, postsState: UiState<List
 @Preview
 @Composable
 fun HomePagePreview() {
-    HomePage()
+    val navController = rememberNavController()
+    HomePage(navController)
 }
