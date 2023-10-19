@@ -25,10 +25,15 @@ fun SetUpNavGraph(controller: NavHostController) {
                 }
             )) {
                 val category = Category.valueOf(it.arguments!!.getString("category")!!)
-                CategoryPage(navcontroller=controller, category = category)
+                CategoryPage(navController = controller, category = category)
             }
-            composable(route = Page.Details.route) {
-                DetailPage(navcontroller=controller)
+            composable(route = Page.Details.route, arguments = listOf(
+                navArgument(name = "postId") {
+                    type = NavType.StringType
+                }
+            )) {
+                val postId = it.arguments!!.getString("postId")!!
+                DetailPage(navController = controller, postId = postId)
             }
         }
     }

@@ -7,13 +7,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import com.example.android.navigation.Page
 import org.example.blogmultiplatform.models.Category
 import org.example.blogmultiplatform.modules.category.CategoryPageContract
 import org.example.blogmultiplatform.modules.category.CategoryPageViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CategoryPage(category: Category, navcontroller: NavHostController) {
+fun CategoryPage(category: Category, navController: NavHostController) {
     val scope = rememberCoroutineScope()
     val viewModel = remember(scope) {
         CategoryPageViewModel(scope, category)
@@ -26,7 +27,9 @@ fun CategoryPage(category: Category, navcontroller: NavHostController) {
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = { navcontroller.popBackStack() }) {
+                    IconButton(onClick = {
+                        navController.popBackStack()
+                    }) {
                         Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = "back")
                     }
                 },
@@ -35,8 +38,10 @@ fun CategoryPage(category: Category, navcontroller: NavHostController) {
                 })
         }
     ) {
-        PostsContent(modifier = Modifier.padding(it), postsState = uiState.state) {
+        PostsContent(modifier = Modifier.padding(it), postsState = uiState.state, onRetry = {
             viewModel.trySend(CategoryPageContract.Inputs.GetItems)
+        }) {
+            navController.navigate(Page.Details(it).route)
         }
     }
 }

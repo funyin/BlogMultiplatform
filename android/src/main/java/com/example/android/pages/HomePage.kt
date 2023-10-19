@@ -29,9 +29,6 @@ import org.example.blogmultiplatform.ui.home.HomePageContract.Inputs
 fun HomePage(navController: NavHostController) {
     val scope = rememberCoroutineScope()
     val viewModel: HomePageViewModel = remember(scope) { HomePageViewModel(scope) }
-//    LaunchedEffect(Unit) {
-//        viewModel.trySend(Inputs.GetAllPosts)
-//    }
     val uiState by viewModel.observeStates().collectAsState()
     val allPostsState = uiState.allPosts
     val searchPostsState = uiState.searchResponse
@@ -86,20 +83,29 @@ fun HomePage(navController: NavHostController) {
                         }
                     }
                 ) {
-                    PostsContent(postsState = searchPostsState) {
+                    PostsContent(postsState = searchPostsState, onRetry = {
                         viewModel.trySend(Inputs.SearchPostsPosts(uiState.searchValue))
+                    }) {
+                        navController.navigate(Page.Details(it).route)
                     }
                 }
         }) {
-            PostsContent(modifier = Modifier.padding(it), postsState = allPostsState) {
+            PostsContent(modifier = Modifier.padding(it), postsState = allPostsState, {
                 viewModel.trySend(Inputs.GetAllPosts)
+            }) {
+                navController.navigate(Page.Details(it).route)
             }
         }
     }
 }
 
 @Composable
-fun PostsContent(modifier: Modifier = Modifier, postsState: UiState<List<PostLight>>, onRetry: () -> Unit) {
+fun PostsContent(
+    modifier: Modifier = Modifier,
+    postsState: UiState<List<PostLight>>,
+    onRetry: () -> Unit,
+    onClick: (String) -> Unit
+) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         when (postsState) {
             is UiState.Error -> {
@@ -121,7 +127,7 @@ fun PostsContent(modifier: Modifier = Modifier, postsState: UiState<List<PostLig
                     ) {
                         items(postsState.data) {
                             PostCard(post = it) {
-
+                                onClick(it.id)
                             }
                         }
 

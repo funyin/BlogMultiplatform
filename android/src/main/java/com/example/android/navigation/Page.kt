@@ -11,7 +11,7 @@ sealed class Page(val route: String) {
 
     data class Details(val postId: String) : Page(route = "details_page/$postId") {
         companion object {
-            const val route = "category_page/{postId}"
+            const val route = "details_page/{postId}"
         }
     }
 }
