@@ -11,6 +11,7 @@ import com.example.android.pages.DetailPage
 import com.example.android.pages.HomePage
 import com.example.android.ui.theme.BlogMultiplatformTheme
 import org.example.blogmultiplatform.models.Category
+import org.example.blogmultiplatform.res.CommonRes
 
 @Composable
 fun SetUpNavGraph(controller: NavHostController) {
