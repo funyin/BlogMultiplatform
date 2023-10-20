@@ -29,7 +29,7 @@ fun SitePageLayout(content: @Composable ColumnScope.(String) -> Unit) {
     var showSidePanel by remember { mutableStateOf(false) }
     var headerState by remember(search) {
         mutableStateOf(HeaderState(search = search) {
-            showSidePanel = false
+            showSidePanel = true
         })
     }
     Box(modifier = Modifier.fillMaxSize()) {

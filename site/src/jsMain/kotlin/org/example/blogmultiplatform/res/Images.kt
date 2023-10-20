@@ -8,14 +8,14 @@ val Res.Images.Companion.laugh: String
 val Res.Images.Companion.icBold: String
     get() = "/b.svg"
 val Res.Images.Companion.icCode: String
-    get() = "/codeOutline.svg"
+    get() = "/code_outline.svg"
 val Res.Images.Companion.icQuote: String
     get() = "/quote.svg"
 val Res.Images.Companion.icItalics: String
     get() = "/i.svg"
 
 val Res.Images.Companion.icLink: String
-    get() = "/linkOutline.svg"
+    get() = "/link_outline.svg"
 
 val Res.Images.Companion.icPicture: String
     get() = "/photograph.svg"
