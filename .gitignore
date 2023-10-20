@@ -8,6 +8,7 @@ local.properties
 # IntelliJ ignores
 *.iml
 /*.ipr
+.idea
 
 /.idea/caches
 /.idea/libraries

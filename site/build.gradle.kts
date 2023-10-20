@@ -19,12 +19,16 @@ val propertiesFile = project.rootProject.file("local.properties")
 if (propertiesFile.exists()) {
     properties.load(propertiesFile.inputStream())
 }
-
-val mongoUri = properties.getProperty("MONGO_URI")
+buildConfig {
+    properties.forEach {
+        if ("${it.key}" != "sdk.dir") {
+            buildConfigField("String", it.key.toString(), "\"${it.value}\"")
+        }
+    }
+}
 
 kobweb {
     app {
-        globals.put("MONGO_URI", mongoUri)
         index {
             description.set("Powered by Kobweb")
             head.add {
@@ -47,9 +51,6 @@ kobweb {
             }
         }
     }
-}
-buildConfig {
-    buildConfigField("String", "MONGO_URI", "\"${mongoUri}\"")
 }
 
 kotlin {

@@ -1,13 +1,30 @@
+import java.util.*
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.serialization.plugin)
     alias(libs.plugins.mongodb.realm)
     id("com.android.library")
+    id("com.github.gmazzo.buildconfig")
 }
 
 group = "org.example.blogmultiplatform"
 version = "1.0-SNAPSHOT"
+
+
+val properties = Properties()
+val propertiesFile = project.rootProject.file("local.properties")
+if (propertiesFile.exists()) {
+    properties.load(propertiesFile.inputStream())
+}
+buildConfig {
+    properties.forEach {
+        if ("${it.key}" != "sdk.dir") {
+            buildConfigField("String", it.key.toString(), "\"${it.value}\"")
+        }
+    }
+}
 
 android {
     compileSdk = 34
