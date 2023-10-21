@@ -51,6 +51,8 @@ WORKDIR /project/${KOBWEB_APP_ROOT}
 RUN mkdir ~/.gradle && \
     echo "org.gradle.jvmargs=-Xmx350m" >> ~/.gradle/gradle.properties
 
+RUN env > /local.properties
+
 RUN kobweb export --notty
 
 #-----------------------------------------------------------------------------
