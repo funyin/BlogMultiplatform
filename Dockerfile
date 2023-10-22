@@ -53,11 +53,18 @@ RUN mkdir ~/.gradle && \
 
 ARG MONGO_URI
 ARG BASE_URL
+ARG PORT
+ARG RAILWAY_PUBLIC_DOMAIN
 
 RUN env > /project/local.properties
 RUN cat /project/local.properties
-#RUN echo "CMD_ARGS=${CMD_ARGS}" > /project/local.properties
-#
+
+
+# Update the port number and hostname in the Kobweb configuration file
+RUN sed -i "s/port: * /port: ${PORT}/" /site/.kobweb/conf.yaml && sed -i "s/name:[[:space:]]*\"[^\"]*\"/name: \"${RAILWAY_PUBLIC_DOMAIN}\"/" /site/.kobweb/conf.yaml
+RUN cat /site/.kobweb/conf.yaml
+
+
 #RUN echo "ARGS:" && echo "${CMD_ARGS}" && echo "ENV:" && env
 
 RUN kobweb export --notty
