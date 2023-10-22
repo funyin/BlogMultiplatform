@@ -61,7 +61,7 @@ RUN cat /project/local.properties
 
 
 # Update the port number and hostname in the Kobweb configuration file
-RUN sed -i "s/port: * /port: ${PORT}/" /project/site/.kobweb/conf.yaml && sed -i "s/name:[[:space:]]*\"[^\"]*\"/name: \"${RAILWAY_PUBLIC_DOMAIN}\"/" /project/site/.kobweb/conf.yaml
+RUN sed -i "s/port:[[:space:]]*[0-9]*/port: ${PORT}/" /project/site/.kobweb/conf.yaml && sed -i "s/name:[[:space:]]*\"[^\"]*\"/name: \"${RAILWAY_PUBLIC_DOMAIN}\"/" /project/site/.kobweb/conf.yaml
 RUN cat /project/site/.kobweb/conf.yaml
 
 RUN kobweb export --notty
