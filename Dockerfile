@@ -59,6 +59,8 @@ ARG RAILWAY_PUBLIC_DOMAIN
 RUN env > /project/local.properties
 RUN cat /project/local.properties
 
+COPY .kobweb /site/.kobweb
+
 
 # Update the port number and hostname in the Kobweb configuration file
 RUN sed -i "s/port: * /port: ${PORT}/" /site/.kobweb/conf.yaml && sed -i "s/name:[[:space:]]*\"[^\"]*\"/name: \"${RAILWAY_PUBLIC_DOMAIN}\"/" /site/.kobweb/conf.yaml
