@@ -51,6 +51,19 @@ WORKDIR /project/${KOBWEB_APP_ROOT}
 RUN mkdir ~/.gradle && \
     echo "org.gradle.jvmargs=-Xmx350m" >> ~/.gradle/gradle.properties
 
+ARG MONGO_URI
+ARG BASE_URL
+ARG PORT
+ARG HOST_NAME
+
+RUN env > /project/local.properties
+RUN cat /project/local.properties
+
+
+# Update the port number and hostname in the Kobweb configuration file
+RUN sed -i "s/port:[[:space:]]*[0-9]*/port: ${PORT}/" /project/site/.kobweb/conf.yaml && sed -i "s/name:[[:space:]]*\"[^\"]*\"/name: \"${HOST_NAME}\"/" /project/site/.kobweb/conf.yaml
+RUN cat /project/site/.kobweb/conf.yaml
+
 RUN kobweb export --notty
 
 #-----------------------------------------------------------------------------

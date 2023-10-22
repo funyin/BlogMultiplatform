@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
+import org.example.blogmultiplatform.res.baseUrl
 
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -41,7 +42,7 @@ fun DetailPage(navController: NavHostController, postId: String) {
                     )
                     settings.javaScriptEnabled = true
                     webViewClient = WebViewClient()
-                    loadUrl("http://10.0.2.2:8080/posts/$postId?hideSections=true")
+                    loadUrl("${baseUrl}/posts/$postId?hideSections=true")
                 }
             })
     }

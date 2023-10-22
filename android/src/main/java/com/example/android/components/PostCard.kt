@@ -11,6 +11,7 @@ import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
@@ -28,6 +29,12 @@ import org.example.blogmultiplatform.utils.DateUtil.toReadableDate
 @Composable
 fun PostCard(post: PostLight, onClick: (PostLight) -> Unit) {
     val context = LocalContext.current
+    val imageRequest = remember {
+        ImageRequest.Builder(context)
+            .data(post.thumbnail
+                .takeIf { it.contains("http") } ?: post.thumbnail.decodeThumbnailImage())
+            .build()
+    }
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -41,12 +48,10 @@ fun PostCard(post: PostLight, onClick: (PostLight) -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(260.dp),
-                model = ImageRequest.Builder(context)
-                    .data(post.thumbnail
-                        .takeIf { it.contains("http") } ?: post.thumbnail.decodeThumbnailImage())
-                    .build(),
+                model = imageRequest,
                 contentScale = ContentScale.Crop,
-                contentDescription = "thumbnail")
+                contentDescription = "thumbnail"
+            )
             Column(
                 modifier = Modifier
                     .fillMaxWidth()

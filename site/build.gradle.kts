@@ -21,7 +21,8 @@ if (propertiesFile.exists()) {
 }
 buildConfig {
     properties.forEach {
-        if ("${it.key}" != "sdk.dir") {
+        println(it)
+        if ("${it.key}" != "sdk.dir" /*&& "${it.key}".startsWith("ENV")*/) {
             buildConfigField("String", it.key.toString(), "\"${it.value}\"")
         }
     }

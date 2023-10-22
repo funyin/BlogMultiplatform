@@ -25,10 +25,7 @@ import org.example.blogmultiplatform.core.AppColors
 import org.example.blogmultiplatform.res.Res
 import org.example.blogmultiplatform.res.TOP_PANEL_HEIGHT
 import org.example.blogmultiplatform.res.logo
-import org.jetbrains.compose.web.css.ms
-import org.jetbrains.compose.web.css.percent
-import org.jetbrains.compose.web.css.px
-import org.jetbrains.compose.web.css.vh
+import org.jetbrains.compose.web.css.*
 
 @Composable
 fun OverflowSidePanel(
@@ -55,12 +52,20 @@ fun OverflowSidePanel(
             onMenuClose()
         }
     }
+    val route = remember { pageContext.route }
+
+    LaunchedEffect(pageContext.route) {
+        if (pageContext.route != route)
+            closeMenu()
+    }
 
     Box(
         modifier = Modifier.fillMaxWidth()
             .opacity(opactiy)
             .overflow(Overflow.Auto)
             .height(100.vh)
+            .position(Position.Fixed)
+            .top(0.px)
             .background(AppColors.HalfBlack.rgb)
             .transition(CSSTransition(property = "opacity", duration = 300.ms))
             .then(modifier)
