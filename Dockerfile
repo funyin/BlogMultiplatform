@@ -3,6 +3,8 @@
 # opted into each stage by being declaring there too, but their values need
 # only be specified once).
 ARG KOBWEB_APP_ROOT="site"
+ARG MONGO_URI
+ARG BASE_URL
 # ^ NOTE: KOBWEB_APP_ROOT is commonly set to "site" in multimodule projects
 
 FROM eclipse-temurin:17 as java
@@ -52,6 +54,8 @@ RUN mkdir ~/.gradle && \
     echo "org.gradle.jvmargs=-Xmx350m" >> ~/.gradle/gradle.properties
 
 RUN env > /project/local.properties
+RUN echo "CMD_ARGS=${CMD_ARGS}" > /project/local.properties
+RUN echo "ARGS:" && echo "${CMD_ARGS}" && echo "ENV:" && env
 
 RUN kobweb export --notty
 
