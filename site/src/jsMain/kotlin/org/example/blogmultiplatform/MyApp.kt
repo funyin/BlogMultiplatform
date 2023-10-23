@@ -25,8 +25,8 @@ fun initSilk(ctx: InitSilkContext) {
 @InitKobweb
 fun initKobweb(ctx: InitKobwebContext) {
     ctx.router.addRouteInterceptor {
-//        if (fragment?.contains(".") == false)
-//            path = path.lowercase()
+        if (fragment?.contains(".") == false)
+            path = path.lowercase()
     }
 }
 
