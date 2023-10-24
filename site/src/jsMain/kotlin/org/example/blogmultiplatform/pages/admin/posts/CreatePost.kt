@@ -14,7 +14,6 @@ import com.varabyte.kobweb.silk.components.graphics.Image
 import com.varabyte.kobweb.silk.components.layout.SimpleGrid
 import com.varabyte.kobweb.silk.components.layout.numColumns
 import com.varabyte.kobweb.silk.components.style.ComponentStyle
-import com.varabyte.kobweb.silk.components.style.ComponentVariant
 import com.varabyte.kobweb.silk.components.style.breakpoint.Breakpoint
 import com.varabyte.kobweb.silk.components.style.hover
 import com.varabyte.kobweb.silk.components.style.toModifier
@@ -126,7 +125,6 @@ private fun CreatePostForm(viewModel: CreatePostViewModel) {
     val actionState = if (!uiState.updateMode) uiState.createPostState else uiState.updatePostState
     SimpleGrid(
         numColumns = numColumns(base = 2, sm = 3),
-        variant = ComponentVariant.Empty,
         modifier = Modifier.thenIf(breakpoint < Breakpoint.SM, Modifier.fillMaxWidth())
     ) {
         SwitchTile(
@@ -145,7 +143,6 @@ private fun CreatePostForm(viewModel: CreatePostViewModel) {
             text = "Sponsored",
             switchSize = SwitchSize.LG,
             checked = uiState.sponsored,
-            modifier = Modifier.margin(top = if (breakpoint < Breakpoint.SM) 14.px else 0.px)
         ) {
             viewModel.trySend(CreatePostContract.Inputs.UpdateSponsored(it))
         }
