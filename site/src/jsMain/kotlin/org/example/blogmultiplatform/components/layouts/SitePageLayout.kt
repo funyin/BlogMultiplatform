@@ -20,7 +20,7 @@ import org.example.blogmultiplatform.components.sections.FooterSection
 import org.example.blogmultiplatform.components.sections.HeaderSection
 import org.example.blogmultiplatform.components.sections.HeaderState
 import org.example.blogmultiplatform.components.sections.panels.OverflowSidePanel
-import org.example.blogmultiplatform.components.widgets.CategoryMenuItems
+import org.example.blogmultiplatform.components.widgets.MenuItemsGroup
 import org.example.blogmultiplatform.res.Res
 import org.example.blogmultiplatform.res.clientPosts
 import org.example.blogmultiplatform.res.posts
@@ -73,7 +73,7 @@ fun SitePageLayout(content: @Composable ColumnScope.(String) -> Unit) {
             onMenuClose = {
                 showSidePanel = false
             }) {
-            CategoryMenuItems(horizontal = false)
+            MenuItemsGroup(horizontal = false)
         }
     }
 }

@@ -22,17 +22,24 @@ import org.jetbrains.compose.web.css.ms
 import org.jetbrains.compose.web.css.px
 
 @Composable
-fun CategoryMenuItems(horizontal: Boolean) {
+fun MenuItemsGroup(horizontal: Boolean) {
     val categories = Category.entries
     val context = rememberPageContext()
     categories.forEachIndexed { index, it ->
         MenuItem(
-            category = it, modifier = Modifier.margin(
-                right = if (horizontal && index != categories.lastIndex) 24.px else 0.px,
-                bottom = if (!horizontal && index != categories.lastIndex) 24.px else 0.px
+            path = Res.Routes.clientPosts + "?category=${it.name}",
+            text = it.name,
+            modifier = Modifier.margin(
+                right = if (horizontal) 24.px else 0.px,
+                bottom = if (!horizontal) 24.px else 0.px
             ), selected = context.route.queryParams["category"] == it.name
         )
     }
+    MenuItem(
+        path = "https://we.tl/t-CT4bpvdEEp",
+        text = "Download App",
+        selected = false
+    )
 }
 
 val MenuItemStyle by ComponentStyle {
@@ -48,13 +55,13 @@ val MenuItemStyle by ComponentStyle {
 }
 
 @Composable
-private fun MenuItem(modifier: Modifier = Modifier, category: Category, selected: Boolean) {
+fun MenuItem(modifier: Modifier = Modifier, path: String, text: String, selected: Boolean) {
     Link(
         modifier = MenuItemStyle.toModifier().fontFamily(Res.Strings.FONT_FAMILY).fontSize(16.px).then(modifier)
             .textDecorationLine(
                 TextDecorationLine.None
             ).thenIf(selected, Modifier.color(AppColors.Primary.rgb)),
-        path = Res.Routes.clientPosts + "?category=${category.name}",
-        text = category.name,
+        path = path,
+        text = text,
     )
 }
