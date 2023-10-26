@@ -6,6 +6,16 @@ just creates a blank home page (which prints to the console so you can confirm i
 If you are still learning, consider instantiating the `app` template (or one of the examples) to see actual,
 working projects.
 
+## Prerequisites
+
+Just provide the following keys in your project level `locale.properties` file to be able to build the
+app with the proper environment
+```properties
+MONGO_URI=""
+BASE_URL=http://localhost:8080
+```
+
+
 ## Getting Started
 
 First, run the development server by typing the following command in a terminal under the `site` folder:
