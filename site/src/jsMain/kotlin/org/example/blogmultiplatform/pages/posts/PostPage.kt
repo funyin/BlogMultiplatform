@@ -3,6 +3,7 @@ package org.example.blogmultiplatform.pages.posts
 import androidx.compose.runtime.*
 import com.varabyte.kobweb.compose.css.FontWeight
 import com.varabyte.kobweb.compose.css.ObjectFit
+import com.varabyte.kobweb.compose.css.Overflow
 import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.ui.Modifier
@@ -43,8 +44,11 @@ fun PostPage() {
     }
     SitePageLayout {
         Column(
-            modifier = Modifier.fillMaxWidth(Res.Dimens.MAX_WIDTH(breakpoint = breakpoint).percent).maxWidth(800.px)
+            modifier = Modifier
+                .fillMaxWidth(Res.Dimens.MAX_WIDTH(breakpoint = breakpoint).percent)
+                .maxWidth(800.px)
                 .padding(top = 40.px, bottom = 200.px)
+                .overflow(Overflow.Auto)
         ) {
             when (postState) {
                 is UiState.Error -> AppErrorView(text = postState.errorMessage) {

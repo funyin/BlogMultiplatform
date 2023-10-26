@@ -17,7 +17,7 @@ import com.varabyte.kobweb.silk.components.icons.fa.FaMagnifyingGlass
 import com.varabyte.kobweb.silk.components.icons.fa.FaXmark
 import com.varabyte.kobweb.silk.components.icons.fa.IconSize
 import com.varabyte.kobweb.silk.components.style.breakpoint.Breakpoint
-import org.example.blogmultiplatform.components.widgets.CategoryMenuItems
+import org.example.blogmultiplatform.components.widgets.MenuItemsGroup
 import org.example.blogmultiplatform.components.widgets.SearchInput
 import org.example.blogmultiplatform.components.widgets.SearchInputDarkVariant
 import org.example.blogmultiplatform.core.AppColors
@@ -90,7 +90,7 @@ fun Header(
                     }
             )
             if (breakpoint >= Breakpoint.LG) {
-                CategoryMenuItems(horizontal = true)
+                MenuItemsGroup(horizontal = true)
             }
             Spacer()
             if (showFullSearch)
